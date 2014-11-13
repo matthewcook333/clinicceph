@@ -1,0 +1,10 @@
+# Emacs stuff
+*~
+\#*#
+
+# Scala stuff
+target/
+
+# Eclipse stuff
+.classpath
+.project
