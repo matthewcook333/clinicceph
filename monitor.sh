@@ -11,5 +11,5 @@ if [ ! -d "$OUT_FOLDER" ]; then
 fi
 
 while read line; do
-    scp -i "$KEY_FILE" "$5@$line:$FILE_PATH" "$OUT_FOLDER"
+    rsync -i "$KEY_FILE" -a "$5@$line:$FILE_PATH" "$OUT_FOLDER"
 done < $SERVERS_FILE
