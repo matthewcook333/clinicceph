@@ -9,4 +9,4 @@ if [ ! -d "$OUT_FOLDER" ]; then
 fi
 
 # Exits with status of this rsync, so missing file errors
-rsync -caz -e "ssh -oBatchMode=yes" "$SERVER_NAME:$FILE_PATH" "$OUT_FOLDER"
+rsync -caz --exclude '*gz' -e "ssh -oBatchMode=yes" "$SERVER_NAME:$FILE_PATH" "$OUT_FOLDER"
