@@ -36,8 +36,8 @@ rawstats (one line per NTP packet received)
   12  stratum
   13  poll
   14  precision
-  15  total roundtrip delay to the primary reference clock
-  16  total dispersion to the primary reference clock
+*  15  total roundtrip delay to the primary reference clock
+*  16  total dispersion to the primary reference clock
   17  refid, association ID
 
 
