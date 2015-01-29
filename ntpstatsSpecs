@@ -1,0 +1,45 @@
+Specs for ntpstats files: http://www.eecis.udel.edu/~mills/ntp/html/monopt.html
+
+loopstats (one line for each system clock update)
+  0 date
+  1 time past midnight
+  2 clock offset
+  3 frequency offset
+  4 RMS jitter
+  5 RMS frequency jitter (wander)
+  6 clock discipline loop time constant
+
+
+peerstats (one line for each "NTP packet or reference clock update received")
+  0 date
+  1 time past midnight
+  3 source address
+  4 status word
+  5 clock offset
+  6 roundtrip delay
+  7 dispersion
+  8 RMS jitter
+
+
+rawstats (one line per NTP packet received)
+  0 date
+  1 time past midnight
+  3 source address
+  4 destination address
+  5 origin timestamp
+  6 receive timestamp
+  7 transmit timestamp
+  8 destination timestamp
+  9 leap warning indicator
+  10  NTP version
+  11  mode
+  12  stratum
+  13  poll
+  14  precision
+  15  total roundtrip delay to the primary reference clock
+  16  total dispersion to the primary reference clock
+  17  refid, association ID
+
+
+sysstats (one line per hour)
+/* Probably useless */
