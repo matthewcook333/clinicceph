@@ -10,7 +10,7 @@ def config1(nodecount, offset, freqexpr, delayexprup, delayexprdown = "", refclo
     conf = ""
 
     for i in range(1, nodecount + 1):
-        conf += "node{}_offset = {}\n".format(i, offset)
+        conf += "node{}_offset = {}\n".format(i, i)
         conf += "node{}_freq = {}\n".format(i, freqexpr)
         conf += "node{}_delay1 = {}\n".format(i, delayexprup)
 
@@ -54,7 +54,11 @@ def createScript(nodecount, scriptname):
             .format(i, ipaddress.IPv4Address("192.168.123.1")))
 
     """ Start experiment """
-    script.write("start_server {} -v 2 -o log.offset -r 2000 -l 40000 \n".format(nodecount))
+    timeLimit = 40000
+
+    script.write("start_server {} -v 2 -o ./tmp/log.timeoffset \
+        -g ./tmp/log.rawoffset -f ./tmp/log.freqoffset -p ./tmp/log.packetdelays \
+        -l {} \n".format(nodecount, timeLimit))
 
     """ Output statistics """
     script.write("cat tmp/stats\n")
@@ -75,11 +79,15 @@ def main():
     if (not os.path.isdir("./tmp")):
         os.mkdir("./tmp")
 
-    config1(100, 0.01, "(+ 1e-6 (sum (* 1e-9 (normal))))", 
-        "(+ 1e-3 (* 1e-3 (exponential)))")
+    # config1(100, 0.01, "(+ 1e-6 (sum (* 1e-9 (normal))))", 
+    #     "(+ 1e-3 (* 1e-3 (exponential)))")
 
+    # TODO: change offset so each node starts at a different offset
+    # config1(10, 0.01, "(sum (* 2e-5 (normal)))", 
+    #     "(+ 1e-4 (* 7e-3 (poisson 5)))")
     
-
+    config1(10, 0.01, "(* 0.0001 (normal))", 
+        "(+ 1e-4 (* 7e-3 (poisson 5)))")
 
 
 
