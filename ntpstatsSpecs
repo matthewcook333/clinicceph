@@ -13,32 +13,32 @@ loopstats (one line for each system clock update)
 peerstats (one line for each "NTP packet or reference clock update received")
   0 date
   1 time past midnight
-  3 source address
-  4 status word
-  5 clock offset
-  6 roundtrip delay
-  7 dispersion
-  8 RMS jitter
+  2 source address
+  3 status word
+  4 clock offset
+  5 roundtrip delay
+  6 dispersion
+  7 RMS jitter
 
 
 rawstats (one line per NTP packet received)
   0 date
   1 time past midnight
-  3 source address
-  4 destination address
-  5 origin timestamp
-  6 receive timestamp
-  7 transmit timestamp
-  8 destination timestamp
-  9 leap warning indicator
-  10  NTP version
-  11  mode
-  12  stratum
-  13  poll
-  14  precision
-*  15  total roundtrip delay to the primary reference clock
-*  16  total dispersion to the primary reference clock
-  17  refid, association ID
+  2 source address
+  3 destination address
+  4 origin timestamp
+  5 receive timestamp
+  6 transmit timestamp
+  7 destination timestamp
+  8 leap warning indicator
+  9  NTP version
+  10  mode
+  11  stratum
+  12  poll
+  13  precision
+*  14  total roundtrip delay to the primary reference clock
+*  15  total dispersion to the primary reference clock
+  16  refid, association ID
 
 
 sysstats (one line per hour)
