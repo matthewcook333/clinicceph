@@ -1,0 +1,50 @@
+\chapter{Commonly Used Terms}
+\label{sec:terms}
+
+\section{General terms}
+\begin{itemize}
+  \item Cluster: computers that are networked together to perform a
+    common task. A Ceph cluster is a bunch of computers that store
+    data using Ceph.
+    
+  \item Node: a single computer in a cluster.
+
+  \item Snapshot: a consistent recording of the entire state of a Ceph cluster
+
+  \item Consistency: the partial ordering of events to preserve the
+    causal relationships between them.
+
+  \item Node Freeze: a hold on processing all writes that are sent to
+    that node.
+
+  \item Clock Drift: the natural drift over time that a computer
+    clock experiences.
+
+  \item Time Synchronization Protocol: a protocol that the nodes in
+    a cluster implement to synchronize their clocks as they drift.
+
+  \item Real Time: the true, global time of the cluster.
+
+  \item Node Time: the time that the clock on a particular node reads;
+    not guaranteed to be the same as real time.
+
+  \item Out-of-Band Communication: communication between users of a
+    Ceph cluster that Ceph has no way of detecting or recording.
+
+  \item Node Failure: when a node in the cluster unexpectedly
+    crashes, either temporarily or permanently.
+\end{itemize}
+
+\section{Ceph specific terms}
+
+\begin{itemize}
+  \item RADOS (Reliable Autonomic Distributed Object Store): Object
+    store service backing the Ceph file system.
+  
+  \item OSD (Object Storage Device): A given storage node within
+    RADOS.
+
+  \item PG (Placement Group): Aggregation of object groups for
+    tracking object placement on OSDs within RADOS
+
+\end{itemize}
