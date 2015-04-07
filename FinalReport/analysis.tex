@@ -15,15 +15,15 @@ us to know what the “safety buffer” is for each node in real time.
 
 The safety buffer, $S(t)$,  for a particular node is defined as:
 
-\[ S(t) =U(t) - | t - E(t)| \]
+\[ S(t) = U(t) - | t - E(t)| \]
 
 where $t$ is the real time, $U(t)$ is NTP’s uncertainty in the real
 time estimate for that node, and E(t) is NTP’s estimate for what the
 real time is. In simpler terms, the safety buffer tells us where NTP’s
 error in what the real time is lies within its uncertainty range (see
-figure~\ref{fig:safety-diag}. If the safety buffer is a positive
+figure~\ref{fig:safety-diag}). If the safety buffer is a positive
 value, then the difference between NTP’s estimate and real time is
-within its uncertainty range. If it is negative, then it’s error is
+within its uncertainty range. If it is negative, then its error is
 outside of its uncertainty range, meaning that NTP doesn’t function as
 we would expect.
 
@@ -35,8 +35,8 @@ we would expect.
 \end{figure}
 
 To prove the correctness of NTP, and therefore our algorithm, we ran a
-Clknetsim simulation with 10 nodes over xxxxx %% TODO fill out your
-section seconds, recording the safety buffer for each of the nodes at
+clknetsim simulation with 10 nodes over 20,000 seconds, 
+recording the safety buffer for each of the nodes at
 every moment in time. We then aggregated those values for all of the
 nodes together and we computed five points of data: the minimum value,
 the maximum value, the average value, the average value plus one
