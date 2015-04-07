@@ -1,0 +1,12 @@
+# -*- mode: gitignore; -*-
+
+# Kill emacs nonsense
+
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
