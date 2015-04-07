@@ -36,3 +36,6 @@ tramp
 *.mtc1
 *.out
 *.synctex.gz
+
+# kill project-specific nonsense
+final-report.pdf
