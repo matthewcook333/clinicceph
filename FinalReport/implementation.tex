@@ -7,8 +7,8 @@ because it not only works with last-seen error but also estimated
 drift rate, changes in that drift rate. Thus, a new machine that is
 being added to the cluster could not be used in snapshots until
 roughly a few thousand seconds after it was added to the
-cluster. Probably this would be handled by giving new machines a “warm
-up” period before they are actually assigned data. Once the machine's
+cluster. Probably this would be handled by giving new machines a ``warm
+up" period before they are actually assigned data. Once the machine's
 NTP estimates settle, it can be incorporated into the Ceph cluster.
 
 The quality of the master NTP clock significantly affects the size
