@@ -1,0 +1,54 @@
+\chapter{Description of Problem}
+\label{sec:description}
+
+As Ceph nodes must store data in several replicas, synchronous data
+replication within a data center is fundamental to the operation of
+Ceph. Ceph currently does not implement a manner in which to
+asynchronously replicate a total data set across geographically
+separated data centers. The design of such an asynchronous replication
+feature is the goal of this project.  This feature would enable usage
+scenarios such as data center fail-over. One of the largest challenges
+in implementing this feature is obtaining a consistent snapshot of the
+total data set at a given point in time. A consistent snapshot here
+means a partition of the set of events (reads and writes) in the
+system such there there is no event excluded from the snapshot that an
+event included in the snapshot depends on. This consistency is
+necessary from the point of view of a client to the file system.
+
+As Ceph is a distributed file system, without controller nodes that
+have a full picture of the system, there are inherent challenges to
+acquiring a complete picture of the system at any given moment in
+time. Ceph is also strongly consistent, so a potential solution is
+further complicated as all data that a particular piece of data relies
+on must also be available. For this problem, a snapshot is allowed to
+be slightly out of date, but it must present a view of the file system
+that the file system could have been in at some point in the past. To
+have older but consistent data is preferable to newer but inconsistent
+data. This consistency must hold from the perspective of a
+client. This means that the system must not assume that it has full
+knowledge of event dependencies, and the system must take into account
+the possibility of out-of-band communication between clients. For
+example, there could be multiple users or hosts using the same Ceph
+distributed file system. These clients could be communicating
+out-of-band with each other (and, as a result, writing to the file
+system) without the file system’s knowledge. In this case, the file
+system would not know that these events depend on each other, yet we
+would still need to ensure that our snapshots are consistent.
+
+The Ceph architecture is designed to grow to hyper-scale. As a result,
+scalability and performance are of primary concern. The time necessary
+to snapshot in any proposed solution must not severely increase as
+more clients and nodes are added. In some production scenarios,
+snapshots must occur with a minimum frequency regardless of cluster
+size. Similarly, snapshots must have negligible impact on users. For
+example, one way to provide a consistent snapshot is to simply block
+all reads and writes to the Ceph file system while the state of the
+system is gathered. However, this solution would have a substantial
+impact on input/output operations, making this solution infeasible.
+
+At the scale of a Ceph deployment, node failures are routine. Any
+solution must take this into account and treat failures as the rule,
+not the exception. A solution must consider the impact of node
+failures on the consistency of a snapshot and be able to adapt
+accordingly. Similarly, a potential solution must assume that
+components on which it relies can fail at any time.
