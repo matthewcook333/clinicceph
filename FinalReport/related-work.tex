@@ -30,7 +30,7 @@ knowledge of the order of those events. These clocks might still be
 useful for reasoning about interactions that occur strictly within the
 Ceph cluster, but they require a second system that supports
 out-of-band communication to meet our consistency
-guarantee~\citep{lamport}.
+guarantee~\citep{Lamport1978}.
 
 Vector clocks are very similar to Lamport clocks. Instead of
 maintaining a single logical time, each node stores a vector of
@@ -43,7 +43,7 @@ superior to Lamport clocks for some purposes because they do not assign
 an arbitrary time to events. Instead, they use the relative times of
 their processes to determine the partial order of the events. However,
 like Lamport clocks, out-of-band communication is not accounted for
-and events could be incorrectly ordered~\citep{vector}.
+and events could be incorrectly ordered~\citep{Fidge1988}.
 
 \section{Network Time Synchronization}
 
@@ -98,7 +98,7 @@ snapshots.
 \subsection{Network Time Protocol}
 
 NTP is a robust algorithm for time
-synchronization~\citep{ntp}. Currently it is among the most
+synchronization~\citep{Burbank2010}. Currently it is among the most
 widely-deployed time synchronization algorithms. NTP is designed to
 synchronize geographically separated computers over the internet. As a
 result, it is resilient to node failure, network unreliability, and
@@ -152,7 +152,7 @@ Surprisingly, wireless time synchronization is a much easier
 problem. Wireless signal propagation times are very easy to model and
 as a result time synchronization is easy to perform with a very high
 level of accuracy. Protocols such as PulseSync take advantage of this
-observation~\citep{lenzen_optimal_2009}.
+observation~\citep{Lenzen2010}.
 
 If extremely small freeze windows are a requirement, a wireless
 synchronization protocol could easily be designed that would allow for
@@ -183,7 +183,7 @@ the current time. The bounds are claimed to be generally less than 10
 milliseconds. This allows for very rapid throughput on the database
 while still maintaining definitive transaction ordering. When
 TrueTime's guaranteed bounds start to spread, it will throttle writes
-to maintain that ordering~\citep{spanner}.
+to maintain that ordering~\citep{Corbett2012}.
 
 \subsection{TrueTime's Clocks}
 
@@ -193,7 +193,7 @@ has placed atomic and GPS clocks in their data centers. TrueTime runs
 a daemon that talks to these clocks, both in its own data center and
 in others. A variation on Marzullo's algorithm is used to weed out
 clocks whose timing information is not reliable (e.g. due to network
-latency)~\citep{spanner}.
+latency)~\citep{Corbett2012}.
 
 \subsection{Applicability}
 
