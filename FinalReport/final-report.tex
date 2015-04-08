@@ -164,7 +164,20 @@
 %%% Abstract
 
 \begin{abstract}
-  Red Hat's Ceph is an open source, hyper-scalable, distributed, strongly consistent file system. Red Hat is interested in supporting geo-replication of data in a Ceph instance, which requires the ability to take consistent, point-in-time, online snapshots of the complete distributed system. We propose an algorithm that uses the uncertainty in time synchronization to generate freeze windows, time intervals when incoming writes are temporarily held, while a snapshot is being determined. Our work includes a proof that our solution will take consistent snapshots without significantly impacting performance. We use real Ceph cluster data to build packet latency and clock drift models and use those to run simulations of a networked system of computers. These simulations prove that the Network Time Protocol (NTP) would be sufficient as a time synchronization protocol and would provide the uncertainty information that is needed by our algorithm to take consistent snapshots.
+  Red Hat's Ceph is an open source, hyper-scalable, distributed, strongly 
+  consistent file system. Red Hat is interested in supporting geo-replication 
+  of data in a Ceph instance, which requires the ability to take consistent, 
+  point-in-time, online snapshots of the complete distributed system. We 
+  propose an algorithm that uses the uncertainty in time synchronization to 
+  generate freeze windows, time intervals when incoming writes are temporarily 
+  held, while a snapshot is being determined. Our work includes a proof that 
+  our solution will take consistent snapshots without significantly impacting 
+  performance. We use real Ceph cluster data to build packet latency and clock 
+  drift models and use those to run simulations of a networked system of 
+  computers. These simulations prove that the Network Time Protocol (NTP) 
+  would be sufficient as a time synchronization protocol and would provide the 
+  uncertainty information that is needed by our algorithm to take consistent 
+  snapshots.
 \end{abstract}
 
 
