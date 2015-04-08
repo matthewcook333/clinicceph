@@ -109,7 +109,7 @@ future clock performance. Notably, NTP does define a maximum error
 term in relation to a single root time source. As a result, NTP is a
 potential choice for a network time protocol in our algorithm.
 
-A better solution is possible, however. NTP’s focus on robustness
+A better solution is possible, however. NTP's focus on robustness
 causes compromises for the freeze time. NTP consistently overestimates
 uncertainty (see figure~\ref{fig:safety-data} and
 chapter~\ref{sec:analysis} more generally for an in-depth examination of
@@ -182,7 +182,7 @@ libraries do. Instead, it gives a range that is guaranteed to contain
 the current time. The bounds are claimed to be generally less than 10
 milliseconds. This allows for very rapid throughput on the database
 while still maintaining definitive transaction ordering. When
-TrueTime’s guaranteed bounds start to spread, it will throttle writes
+TrueTime's guaranteed bounds start to spread, it will throttle writes
 to maintain that ordering~\citep{spanner}.
 
 \subsection{TrueTime's Clocks}
@@ -191,7 +191,7 @@ TrueTime relies on having extremely good clocks to maintain sub-10ms
 skew between geographically diverse data centers. Specifically, Google
 has placed atomic and GPS clocks in their data centers. TrueTime runs
 a daemon that talks to these clocks, both in its own data center and
-in others. A variation on Marzullo’s algorithm is used to weed out
+in others. A variation on Marzullo's algorithm is used to weed out
 clocks whose timing information is not reliable (e.g. due to network
 latency)~\citep{spanner}.
 
@@ -199,7 +199,7 @@ latency)~\citep{spanner}.
 
 As a concept, TrueTime is interesting. However, as it is a proprietary
 library and as it requires special hardware, it would not be able to
-be used directly as a solution to Ceph’s asynchronous replication
+be used directly as a solution to Ceph's asynchronous replication
 problem. However, if a similar open source protocol became available,
 it could merit deeper analysis. %% TODO This exists, we talked about
                                 %% it, it's called Cockroach

@@ -27,9 +27,9 @@ The algorithm we propose has 4 phases. They are as follows:
   
   Nodes hold incoming writes. The writes may be processed, but
   completion is not acknowledged. Let $U_i$ be the uncertainty in node
-  $i$’s current time, and $T$ be the scheduled snapshot time. Node $i$
+  $i$'s current time, and $T$ be the scheduled snapshot time. Node $i$
   begins its freeze when its clock reads $T - U_i$, and completes it
-  when its clock reads $T + U_i$, guaranteeing that the master clock’s
+  when its clock reads $T + U_i$, guaranteeing that the master clock's
   $T$ is captured in the freeze window for all $i$. (TODO reference
   proof section)
 
@@ -47,7 +47,7 @@ The algorithm we propose has 4 phases. They are as follows:
   
   Finally, if the snapshot was marked as good after phase 3, the data
   may be replicated. Because the first step in taking a snapshot is
-  simply writing down a marker in an OSD’s log, it is straightforward
+  simply writing down a marker in an OSD's log, it is straightforward
   either to do a full snapshot, or just a diff since the last good
   snapshot.
 

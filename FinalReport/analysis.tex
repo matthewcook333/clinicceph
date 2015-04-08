@@ -4,7 +4,7 @@
 \section{Correctness}
 
 When we run our simulations, we want to determine whether NTP can give
-accurate bounds on each node’s uncertainty range to include the real
+accurate bounds on each node's uncertainty range to include the real
 time. This is the key characteristic of NTP that allows our algorithm
 to work correctly.
 
@@ -17,14 +17,14 @@ The safety buffer, $S(t)$,  for a particular node is defined as:
 
 \[ S(t) = U(t) - | t - E(t)| \]
 
-where $t$ is the real time, $U(t)$ is NTP’s uncertainty in the real
-time estimate for that node, and E(t) is NTP’s estimate for what the
-real time is. In simpler terms, the safety buffer tells us where NTP’s
+where $t$ is the real time, $U(t)$ is NTP's uncertainty in the real
+time estimate for that node, and E(t) is NTP's estimate for what the
+real time is. In simpler terms, the safety buffer tells us where NTP's
 error in what the real time is lies within its uncertainty range (see
 figure~\ref{fig:safety-diag}). If the safety buffer is a positive
-value, then the difference between NTP’s estimate and real time is
+value, then the difference between NTP's estimate and real time is
 within its uncertainty range. If it is negative, then its error is
-outside of its uncertainty range, meaning that NTP doesn’t function as
+outside of its uncertainty range, meaning that NTP doesn't function as
 we would expect.
 
 \begin{figure}[h]
@@ -70,7 +70,7 @@ the standout determining factor for how performant our algorithm will
 be. Lower the mean network latency and you will be rewarded by a
 fairly consistently linear drop in freeze times.
 
-It’s worth discussing how the network latency is modeled for these
+It's worth discussing how the network latency is modeled for these
 simulations. Network latency was modeled using a gamma distribution,
 since the data from the test Ceph cluster seemed to suggest that
 latency approximately followed such a model. We varied two parameters:
@@ -119,7 +119,7 @@ and maximum of the error, we see lower values for lower alpha values.
 As can be seen in figure~\ref{fig:max-mean-var-drift},
 figure~\ref{fig:mean-mean-var-drift}, and
 figure~\ref{fig:stddev-mean-drift-var} there is very little, if any,
-effect of the drift variance of a node’s internal clock on the max
+effect of the drift variance of a node's internal clock on the max
 error term. This is expected network latency is a much larger term in
 comparison to even the worst clocks. We again do see a strong,
 apparently linear, correlation between mean latency and the max error
@@ -201,7 +201,7 @@ the result of the clock actually keeping poor time.
 In summary, network latency mean has a larger effect on freeze
 times. Network traffic shape does have an effect on freeze times, but
 its effect is small in comparison to mean latency. An individual
-node’s clock’s drift variance is inconsequential to the final
+node's clock's drift variance is inconsequential to the final
 performance of our algorithm.
 
 Due to how uncertainties compound in NTP, it is highly advisable to

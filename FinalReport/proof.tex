@@ -6,13 +6,13 @@
 The freeze windows for our algorithm are designed to ensure
 that there is some point in time at which all nodes in the cluster are
 frozen. Each node knows the intended freeze time. However, since their
-clocks aren’t perfect, they don’t know exactly when they have reached it.
+clocks aren't perfect, they don't know exactly when they have reached it.
 
 Recall that our algorithm calls for each node to start its freeze
 window when its clock reads $T - U_i$, and completes it when its clock
-reads $T + U_i$, where $T$ is the freeze time and $U_i$ is NTP’s uncertainty
+reads $T + U_i$, where $T$ is the freeze time and $U_i$ is NTP's uncertainty
 at that time. Since NTP guarantees that the real time $T$ will be within
-the uncertainty bounds of when the node’s clock reads $T$, we can be
+the uncertainty bounds of when the node's clock reads $T$, we can be
 sure that each node will be frozen at the freeze time. Therefore, we
 can be certain that their freeze windows overlap. 
 Figure~\ref{fig:overlapping-windows} below
@@ -55,15 +55,15 @@ frozen.  During this interval, the cluster as a whole will not respond
 to write events. Therefore, when we are considering the order of
 events, we can collapse that whole interval into a single event and we
 can consider the start time of the interval to be the time of the
-event. Let’s call the event $F$ and its time $T_F$.
+event. Let's call the event $F$ and its time $T_F$.
 
-Let’s assume, for the sake of contradiction, that there is a series of
+Let's assume, for the sake of contradiction, that there is a series of
 events that could violate our proposed invariant. More specifically,
 let us have events $C$ and $D$, the first of which caused the
 second. Assume that it is possible for $D$ to have been captured in
 the snapshot while $C$ was not.
 
-Each node’s portion of the snapshot is taken when that node
+Each node's portion of the snapshot is taken when that node
 freezes. No other events will occur on the node between when it takes
 its snapshot (i.e. the beginning of its freeze interval) and $F$, the
 moment when all nodes are frozen. By definition, if $D$ was included
@@ -93,7 +93,7 @@ what impact our solution would have on a Ceph instance if NTP is used
 as the time synchronization protocol. However, if a time
 synchronization protocol could provide uncertainties in 10-20
 millisecond range, giving 20-40 millisecond freeze windows, our
-algorithm shouldn’t impact the cluster’s performance
+algorithm shouldn't impact the cluster's performance
 significantly. Also, freeze windows of each of the nodes is offset
 from each other, which means that the whole Ceph instance is frozen
 for a much shorter period of time.
@@ -116,7 +116,7 @@ in particular.
 Finally, we need to consider whether this algorithm will place a
 significant computational burden on nodes. Each primary OSD needs to
 send its PGs' information to the remote instance. This should not
-impact the performance of the primaries, since it shouldn’t take too
+impact the performance of the primaries, since it shouldn't take too
 long to send all of that information. Even if it did take a while to
 send the information, read and write requests could still be addressed
 by prioritizing those requests above the requests for the objects from
