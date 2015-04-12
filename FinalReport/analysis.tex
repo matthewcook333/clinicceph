@@ -65,10 +65,10 @@ accuracy statistics that will result in the correct performance of our
 algorithm. However, more exacting network layouts will be necessary to
 make our algorithm performant. The data displayed in this section
 summarizes trends seen when varying a number of parameters in a
-standard network setup. We find few surprises -- network latency is
-the standout determining factor for how performant our algorithm will
-be. Lower the mean network latency and you will be rewarded by a
-fairly consistently linear drop in freeze times.
+standard network setup. What we found was mostly unsurprising --
+network latency is the standout determining factor for how performant
+our algorithm will be. Lower the mean network latency and you will be
+rewarded by a fairly consistently linear drop in freeze times.
 
 It's worth discussing how the network latency is modeled for these
 simulations. Network latency was modeled using a gamma distribution,
@@ -86,16 +86,16 @@ shaping parameter approximates a normal distribution.
 
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{mean_max_error-mean_latency-latency_alpha.png}
+  \includegraphics[width=0.8\linewidth]{mean_max_error-mean_latency-latency_alpha.png}
 \end{figure}
 
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{max_err_stddev-latency_mean-latency_alpha.png}
+  \includegraphics[width=0.8\linewidth]{max_err_stddev-latency_mean-latency_alpha.png}
 \end{figure}
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{max_error-latency_mean-latency_alpha.png}
+  \includegraphics[width=0.8\linewidth]{max_error-latency_mean-latency_alpha.png}
 \end{figure}
 
 The NTP Max Error term is strongly affected by the mean network
@@ -134,19 +134,19 @@ spread does increase with increasing latency mean.
 \begin{figure}[h]
   \caption{}
   \label{fig:max-mean-var-drift}
-  \includegraphics[width=1\linewidth]{max_max_err-mean_latency-drift_variance.png}
+  \includegraphics[width=0.8\linewidth]{max_max_err-mean_latency-drift_variance.png}
 \end{figure}
 
 \begin{figure}[h]
   \caption{}
   \label{fig:mean-mean-var-drift}
-  \includegraphics[width=1\linewidth]{mean_max_err-mean_latency-drift_variance.png}
+  \includegraphics[width=0.8\linewidth]{mean_max_err-mean_latency-drift_variance.png}
 \end{figure}
 
 \begin{figure}[h]
   \caption{}
   \label{fig:stddev-mean-drift-var}
-  \includegraphics[width=1\linewidth]{stddev_max_err-mean_latency-drift_variance}
+  \includegraphics[width=0.8\linewidth]{stddev_max_err-mean_latency-drift_variance}
 \end{figure}
 
 Larger latency values do seem to mean that at any given time the
@@ -157,11 +157,11 @@ almost no role.
 %% TODO please \ref these somewhere
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{max_abs_time-latency_mean-drift_var.png}
+  \includegraphics[width=0.8\linewidth]{max_abs_time-latency_mean-drift_var.png}
 \end{figure}
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{mean_abs_time-mean_latency-drift_var.png}
+  \includegraphics[width=0.8\linewidth]{mean_abs_time-mean_latency-drift_var.png}
 \end{figure}
 
 Larger latency values do seem to mean that at any given time the
@@ -173,15 +173,15 @@ almost no role.
 %% TODO please \ref these somewhere
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{max_abs_freq-mean_latency-drift_var.png}
+  \includegraphics[width=0.8\linewidth]{max_abs_freq-mean_latency-drift_var.png}
 \end{figure}
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{mean_abs_freq-mean_latency-drift_var.png}
+  \includegraphics[width=0.8\linewidth]{mean_abs_freq-mean_latency-drift_var.png}
 \end{figure}
 
 \begin{figure}[h]
-  \includegraphics[width=1\linewidth]{stddev_abs_freq-mean_latency-drift_var.png}
+  \includegraphics[width=0.8\linewidth]{stddev_abs_freq-mean_latency-drift_var.png}
 \end{figure}
 
 For larger variance in the drift, NTP does have to make larger
