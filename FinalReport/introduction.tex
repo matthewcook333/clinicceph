@@ -2,7 +2,7 @@
 \label{sec:introduction}
 
 Ceph is a highly distributed, strongly consistent file system. It
-stores data redundantly within a data center using a type of hashing
+stores data redundantly within a data center using a distributed hashing
 algorithm. This hashing algorithm determines how data is divided among
 storage nodes.  By calculating hash information independently, a Ceph
 client may communicate directly with the correct storage nodes rather
@@ -18,10 +18,21 @@ asynchronously geo-replicate the contents of a Ceph cluster. The task
 also specifies requirements for performance and consistency. We were
 able to find a solution to the problem presented to us, and our
 completed goals are in line with those that we set at the beginning of
-the project (see appendix~\ref{sec:plan} for details).
+the project (see appendix~\ref{sec:plan} for details). We have
+completed both a proof of correctness of our approach and analyzed 
+the performance impact of our algorithm on a cluster.
 Chapter~\ref{sec:proof} demonstrates both the theoretical correctness
 and theoretical performance of our
 algorithm. Chapter~\ref{sec:analysis} covers a concrete demonstration
-of the same. In addition to our promised deliverables, we are also
+of the same. In addition to this report, we are also
 delivering a set of utilities and scripts to replicate and extend our
-analysis for Ceph clusters to which snapshotting is being rolled out.
+analysis. These scripts will also be useful in analyzing clusters on 
+which consistent geo-replication is enabled. Using the results of this
+clinic, a future team should be able to quickly implement our
+algorithm in Ceph.
+
+In Appendix~\ref{sec:terms} on page~\pageref{sec:terms} we provide
+a glossary including technical terms we use in this report.
+
+
+%TODO makeing clear that we aren't delivering code
