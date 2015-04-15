@@ -6,8 +6,8 @@ Ceph is inherently distributed. The system does not have a single or
 small group of nodes that can track every transaction. Instead, the
 cluster must aggregate knowledge from thousands of nodes to capture a
 complete point-in-time snapshot of its data. Significant research
-efforts have been directed toward taking snapshots, and synchronizing
-and ordering events in distributed systems. Unfortunately, none of he
+efforts have been directed toward taking snapshots and synchronizing
+and ordering events in distributed systems. Unfortunately, none of the
 approaches we reviewed can address the particular needs of Ceph
 without modification.
 
@@ -48,14 +48,14 @@ and events could be incorrectly ordered~\citep{Fidge1988}.
 \section{Network Time Synchronization}
 
 We could also try to achieve ordering through timestamps. In theory,
-this would be able to provide a total ordering of events independent
+this would be able to provide a total ordering of events including
 of any out-of-band communication. Clock drift and skew complicate this
 approach: When multiple time sources are in use in a distributed system,
 the clocks must be synchronized to a high degree of accuracy in order
 to use timestamps to order events across nodes. In a real distributed
 system, generally each machine is just using its own RTC
 circuit. These are reasonably good for ordinary use, but do not have
-the reliability of precision we need. %% TODO? cite intel spec sheet
+the precise reliability we need. %% TODO? cite intel spec sheet
 
 A naive approach to a distributed snapshot algorithm uses timestamps
 alone to establish a total ordering of events in a system. This works
@@ -107,7 +107,7 @@ network and nodes on which it is operating to provide useful
 synchronization. It uses a number of statistical estimators to predict
 future clock performance. Notably, NTP does define a maximum error
 term in relation to a single root time source. As a result, NTP is a
-potential choice for a network time protocol in our algorithm.
+potential choice for a time synchronization method in our algorithm.
 
 A better solution is possible, however. NTP's focus on robustness
 causes compromises for the freeze time. NTP consistently overestimates
@@ -120,7 +120,7 @@ result provide tighter bounds on its error.
 
 In chapters~\ref{sec:results} and~\ref{sec:analysis}, we analyze the
 performance of an NTP implementation, ntpd, across various clock and
-network conditions. The ntpd daemon was chosen for it common use and
+network conditions. The ntpd daemon was chosen for its common use and
 ease of access to relevant calculated parameters. Chrony is another
 potential choice for an NTP implementation, although it lacks some
 diagnostic reporting. %% TODO these were flagged as needing citations
@@ -129,7 +129,7 @@ diagnostic reporting. %% TODO these were flagged as needing citations
 \subsection{Precision Time Protocol}
 
 PTP is designed for tightly synchronizing computers on a local network
-<TODO citation>. To gain even better synchronization, a user may use
+~\citeyearpar{2008}. To gain even better synchronization, a user may use
 specific hardware that supports PTP. This hardware is generally
 included in current data center switches already. This hardware helps
 PTP decrease the amount of random variation in message latency in a
@@ -143,8 +143,8 @@ If performance of NTP is found to be unsatisfactory, it would be worth
 considering extending PTP (chapter~\ref{sec:impl} has a brief discussion
 of this). The implementation of a maximum error term would be
 sufficient for PTP to be supported. Linux PTP is an implementation of
-the Precision Time Protocol (PTP) <TODO citation>. PTPd is another
-implementation <TODO citation>.
+the Precision Time Protocol (PTP)~\citeyearpar{2008}. PTPd is another
+implementation~\citeyearpar{2008}.
 
 \subsection{Wireless Synchronization}
 
@@ -170,8 +170,8 @@ chapter~\ref{sec:impl}.
 \section{TrueTime}
 
 Google has a number of very time-sensitive applications, most notably
-the synchronously georeplicated Spanner database. Synchronous
-georeplication of database transactions requires very strong time
+the synchronously geo-replicated Spanner database. Synchronous
+geo-replication of database transactions requires very strong time
 guarantees because database transaction ordering is important. A
 library called TrueTime was developed to support these applications.
 

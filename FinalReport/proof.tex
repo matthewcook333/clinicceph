@@ -10,11 +10,12 @@ clocks aren't perfect, they don't know exactly when they have reached it.
 
 Recall that our algorithm calls for each node to start its freeze
 window when its clock reads $T - U_i$, and completes it when its clock
-reads $T + U_i$, where $T$ is the freeze time and $U_i$ is NTP's uncertainty
-at that time. Since NTP guarantees that the real time $T$ will be within
-the uncertainty bounds of when the node's clock reads $T$, we can be
-sure that each node will be frozen at the freeze time. Therefore, we
-can be certain that their freeze windows overlap. 
+reads $T + U_i$, where $T$ is the freeze time and $U_i$ is the time 
+synchronization method's (e.g. NTP) uncertainty  at that time. 
+Since our chosen time synchronization method guarantees that the real 
+time $T$ will be within the uncertainty bounds of when the node's 
+clock reads $T$, we can be sure that each node will be frozen at the 
+freeze time. Therefore, we can be certain that their freeze windows overlap. 
 Figure~\ref{fig:overlapping-windows} below
 demonstrates this concept with four freeze windows overlapping at the freeze 
 time of 8pm.
@@ -90,11 +91,11 @@ determined by the time protocol, the magnitude of the uncertainty is
 dependent on which time synchronization protocol is used. We analyze
 the uncertainty that NTP provides later in this document and discuss
 what impact our solution would have on a Ceph instance if NTP is used
-as the time synchronization protocol. However, if a time
-synchronization protocol could provide uncertainties in 10-20
+as the time synchronization protocol. However, as long as a time
+synchronization protocol could provide uncertainties in the 10-20
 millisecond range, giving 20-40 millisecond freeze windows, our
 algorithm shouldn't impact the cluster's performance
-significantly. Also, freeze windows of each of the nodes is offset
+significantly. Also, freeze windows of each of the nodes are offset
 from each other, which means that the whole Ceph instance is frozen
 for a much shorter period of time.
 
@@ -123,7 +124,7 @@ by prioritizing those requests above the requests for the objects from
 the remote instance. Sending all of the information out at once could
 use a lot of bandwidth, but since it is distributed throughout the
 Ceph instance, the choke point would be the bandwidth from the local
-instance to the remote instance, which should be pretty large and not
+instance to the remote instance, which should be large and not
 a concern if we prioritize normal client traffic over the
 inter-instance traffic.
 
