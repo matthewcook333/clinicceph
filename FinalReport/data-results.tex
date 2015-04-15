@@ -56,7 +56,7 @@ test cluster appear to generally be around single digit milliseconds.
 
 
 We observed the behavior of clock jitter on the same Ceph test
-cluster, as shown in Figure A, B, and C for the different types of
+cluster, as shown in Figure~\ref{fig:burnupi-hist}, and Figure~\ref{fig:burnupi-hist} for the different types of
 computers. Despite the different offsets, these can be seen to have a
 generally normal distribution. These values are reasonable as we would
 generally expect clock jitter to be at most around $\pm 20$ PPM. The average
@@ -67,11 +67,15 @@ nodes is 0.648, and Plana nodes is 2.011. The average across all is
 %% TODO what's a mira? who's Plana? Where is this ``burnupi''?
 
 \begin{figure}[h]
+  \label{fig:burnupi-hist}
+  \caption{Histogram of NTP's frequency offset for Burnupi nodes in our Ceph test cluster.}
   \centering
   \includegraphics[width=0.8\textwidth]{burnupi-freq-offset.png}
 \end{figure}
 
 \begin{figure}[h]
+  \label{fig:plana-hist}
+  \caption{Histogram of NTP's frequency offset for Plana nodes in our Ceph test cluster.}
   \centering
   \includegraphics[width=0.8\textwidth]{plana-freq-offset.png}
 \end{figure}
