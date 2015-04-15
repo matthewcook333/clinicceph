@@ -9,46 +9,55 @@ clock synchronization algorithm used by the data center support error
 bounding. The most common NTP implementation, ntpd, supports
 this. Second, to remain performant it requires a certain baseline
 clock and network link quality, although it will degrade gracefully
-with poor clocks or links (TODO reference results section)
+with poor clocks or links (Chapter~\ref{sec:results})
 
-The algorithm we propose has 4 phases. They are as follows:
+We propose an algorithm composed of 4 major phases:
 
 \begin{enumerate}
 
 \item \emph{Synchronization}
 
-  This ``phase" is happening continuously in the data center. All nodes
-  sync their clocks to a common master clock using a synchronization
-  algorithm supporting error bounds as discussed above. Additionally,
-  snapshot times are pushed out (possibly via map updates or embedding
-  in heartbeat replies).
+  During the synchronization phase, all nodes run a supported time synchronization
+  algorithm. All nodes attempts to synchronize their internal clocks 
+  with a single, common master clock. Administrative messages are also 
+  exchanged during this phase. These messages include scheduling future 
+  snapshot times. These messages may also be able to be rolled into already
+  existing messages such as map updates or heartbeats. 
 
 \item \emph{Freeze}
   
-  Nodes hold incoming writes. The writes may be processed, but
-  completion is not acknowledged. Let $U_i$ be the uncertainty in node
+  When a node is frozen, it holds write confirmations. Incoming writes may 
+  be processed, but
+  completion is not acknowledged until the end of the freeze. 
+  
+  Let $U_i$ be the uncertainty in node
   $i$'s current time, and $T$ be the scheduled snapshot time. Node $i$
   begins its freeze when its clock reads $T - U_i$, and completes it
   when its clock reads $T + U_i$, guaranteeing that the master clock's
-  $T$ is captured in the freeze window for all $i$. (TODO reference
-  proof section)
+  $T$ is captured in the freeze window for all $i$ (Chapter~\ref{sec:proof}).
 
 \item \emph{Confirmation}
 
-  Before a snapshot may be marked as good, the data center must wait a
+  Before a snapshot may be marked as successful, the data center must wait a
   short period. This allows any sudden clock desynchronization events
-  or node failures to be detected, and consistency
-  checked. Specifically, RADOS verifies that for each failure, at
-  least one other member of all the PGs on that node did not fail or
-  have clock desynchronization events. If no errors are found, the
-  snapshot is marked as good
+  or node failures to be detected and consistency
+  checked. The Ceph cluster can verify that, for every node failure during
+  the snapshot, at
+  least one other replica of that node's data did not fail. This is 
+  enough data to recover a snapshot (Chapter~\ref{sec:proof}).
+  If no irreparable inconsistencies are found, the
+  snapshot is marked as successful.
 
 \item \emph{Replication}
   
-  Finally, if the snapshot was marked as good after phase 3, the data
-  may be replicated. Because the first step in taking a snapshot is
+  Finally, if the snapshot was marked as successful after confirmation, 
+  the data in the Ceph cluster, as it existed at the time of the snapshot, 
+  may begin being replicated to a remote Ceph cluster. 
+  Because the first step in taking a snapshot is
   simply writing down a marker in an OSD's log, it is straightforward
   either to do a full snapshot, or just a diff since the last good
   snapshot.
+  
+  While replication is underway, the next synchronization phase begins.
 
 \end{enumerate}

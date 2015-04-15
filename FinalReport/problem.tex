@@ -1,7 +1,9 @@
 \chapter{Description of Problem}
 \label{sec:description}
 
-Ceph currently does not provide a mechanism to perform a full cluster
+Ceph currently implements a robust and performant file system for storing
+with strong consistency client data in a single physical data center. 
+However, Ceph currently does not provide a mechanism to perform a full cluster
 snapshot, and thus cannot support consistent, asynchronous replication
 to a remote data center. The design of such an asynchronous
 replication feature is the goal of this project.  This feature would
@@ -10,11 +12,14 @@ in implementing this feature is obtaining a consistent snapshot of the
 total data set at a given point in time. A consistent snapshot here
 means a partition of the set of events (reads and writes) in the
 cluster such that there is no event excluded from the snapshot that an
-event included in the snapshot depends on. In other words, for any
-event pair $e_1$ and $e_2$, if $e_2$ depends on $e_1$, and $e_2$ is
-included in the snapshot, so is $e_1$. This consistency is necessary
-from the point of view of a client to the file system.
+event included in the snapshot depends on. For our purposes, an event 
+depends on another event if a computer with some knowledge of the 
+file system (client or server) could definitively order the events in time.
+This consistency guarantee allows file system clients to make
+assumptions about the data available in the file system. 
 
+In order to take a snapshot, we need a process for acquiring necessary
+information about the system.
 Because Ceph clusters have no controller nodes with a full picture of
 the system, there are unusual challenges to acquiring a complete
 picture of the system at any given moment in time. Ceph is strongly
@@ -29,12 +34,15 @@ perspective of a client. The cluster cannot not assume that it has
 full knowledge of event dependencies, because clients are allowed to
 carry out out-of-band communication among themselves.
 
-For example, there could be a pair of databases being written to a
-Ceph filesystem via different clients. These databases could both be
-backing the same web application, which reads from one and then writes
-to the other based on that read. Since the web application did this
-via two separate clients, we have no way of knowing that the read
-caused the write.
+For example, a pair of clients could be separately accessing a pair
+of object in the Ceph file system. These clients could both be
+controlled by the same application. The application may read from 
+(or write to) one 
+object, through the first client. As a result of this operation,
+the application then may decide to write to the second object 
+through the second client. Since these operations are 
+handled by separate clients, we have no way of knowing that the first
+operation caused the second.
 
 The Ceph architecture is designed to grow to scale to clusters of
 arbitrary size, so scalability and performance are important concerns
@@ -42,11 +50,12 @@ as well. The time necessary to snapshot in any proposed solution must
 not severely increase as more clients and nodes are added. In some
 production scenarios, snapshots must occur with a minimum frequency
 regardless of cluster size. Similarly, snapshots must have negligible
-impact on cluster read and write performance. One way to provide a
-consistent snapshot is to simply block all reads and writes to the
-Ceph file system while the state of the system is gathered. However,
-this solution would have a substantial impact on input/output
-operations so we can reject it out of hand.
+impact on cluster read and write performance. As an example of 
+a naive, unworkable solution, consider taking a snapshot by 
+simply blocking all operations in a data center until the necessary
+information can be gathered. This solution would clearly have too
+substantial impact on input/output
+operations.
 
 At the scale of a Ceph deployment, nodes fail routinely. Any
 solution must take this into account and treat failures as the rule,

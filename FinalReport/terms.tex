@@ -54,5 +54,14 @@
   \item Placement Group (PG): Objects stored in a Ceph cluster are aggregated into
    Placement Groups by a distributed hash function. Each Object Storage Device
    contains a large number of Placement Groups.
+   
+  \item Map: A data structure that associates file hashes with clients. With the current map, a 
+  	client may communicate directly with the Ceph node most relevant to a given transaction. A new
+  	map is generated, and lazily propagated to nodes and clients, each time the availability of 
+  	nodes changes.
+  	
+  \item Heartbeat: A message sent between nodes for the purpose of checking that the recipient is
+  	still alive. If a node does not respond to a set number of heartbeats, that node is marked as 
+  	failed and a new map is generated.
 
 \end{itemize}
