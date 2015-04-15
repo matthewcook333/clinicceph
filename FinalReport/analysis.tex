@@ -89,10 +89,10 @@ shaping parameter approximates a normal distribution.
   \includegraphics[width=0.8\linewidth]{mean_max_error-mean_latency-latency_alpha.png}
 \end{figure}
 
-
-\begin{figure}[h]
-  \includegraphics[width=0.8\linewidth]{max_err_stddev-latency_mean-latency_alpha.png}
-\end{figure}
+%% Put in the appendix
+% \begin{figure}[h]
+%   \includegraphics[width=0.8\linewidth]{max_err_stddev-latency_mean-latency_alpha.png}
+% \end{figure}
 
 \begin{figure}[h]
   \includegraphics[width=0.8\linewidth]{max_error-latency_mean-latency_alpha.png}
@@ -144,41 +144,40 @@ spread does increase with increasing latency mean.
   \includegraphics[width=0.8\linewidth]{mean_max_err-mean_latency-drift_variance.png}
 \end{figure}
 
-\begin{figure}[t]
-  \caption{}
-  \label{fig:stddev-mean-drift-var}
-  \includegraphics[width=0.8\linewidth]{stddev_max_err-mean_latency-drift_variance}
-\end{figure}
+%% Put in the appendix
+% \begin{figure}[t]
+%   \caption{}
+%   \label{fig:stddev-mean-drift-var}
+%   \includegraphics[width=0.8\linewidth]{stddev_max_err-mean_latency-drift_variance}
+% \end{figure}
 
 Larger latency values do seem to mean that at any given time the
 absolute time offset may be larger. However, network latency does not
 seem to play a large role in the mean time offset. Drift seems to play
 almost no role.
 
-%% TODO please \ref these somewhere
+%% Put these figures in an appendix
+% \begin{figure}[h]
+%   \includegraphics[width=0.8\linewidth]{max_abs_time-latency_mean-drift_var.png}
+% \end{figure}
 
-\begin{figure}[h]
-  \includegraphics[width=0.8\linewidth]{max_abs_time-latency_mean-drift_var.png}
-\end{figure}
-
-\begin{figure}[h]
-  \includegraphics[width=0.8\linewidth]{mean_abs_time-mean_latency-drift_var.png}
-\end{figure}
+% \begin{figure}[h]
+%   \includegraphics[width=0.8\linewidth]{mean_abs_time-mean_latency-drift_var.png}
+% \end{figure}
 
 
-%% TODO please \ref these somewhere
+%% Put these figures in an appendix
+% \begin{figure}[h]
+%   \includegraphics[width=0.8\linewidth]{max_abs_freq-mean_latency-drift_var.png}
+% \end{figure}
 
-\begin{figure}[h]
-  \includegraphics[width=0.8\linewidth]{max_abs_freq-mean_latency-drift_var.png}
-\end{figure}
+% \begin{figure}[h]
+%   \includegraphics[width=0.8\linewidth]{mean_abs_freq-mean_latency-drift_var.png}
+% \end{figure}
 
-\begin{figure}[h]
-  \includegraphics[width=0.8\linewidth]{mean_abs_freq-mean_latency-drift_var.png}
-\end{figure}
-
-\begin{figure}[h]
-  \includegraphics[width=0.8\linewidth]{stddev_abs_freq-mean_latency-drift_var.png}
-\end{figure}
+% \begin{figure}[h]
+%   \includegraphics[width=0.8\linewidth]{stddev_abs_freq-mean_latency-drift_var.png}
+% \end{figure}
 
 For larger variance in the drift, NTP does have to make larger
 frequency corrections, but it seems that NTP is more than capable of
