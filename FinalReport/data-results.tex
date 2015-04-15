@@ -20,11 +20,10 @@ existence of the overlap. In order to accurately simulate the
 characteristics of a real Ceph cluster, we need to model the actual
 behavior of a given Ceph cluster.
 
-To do so, we used the Network Time Protocol daemon, ntpd, which is an
-operating system program that maintains the system time in
-synchronization with the Network Time Protocol (NTP) servers. This
-allowed us to log data and statistics about the clock and network
-communications. In particular, the data that interests us for
+To do so, we used ntpd. This particular implementation exposes a
+significant amount of diagnostic data when configured properly, which
+allowed us to log data and statistics about machines' clocks and
+network communications. In particular, the data that interests us for
 simulation is the clock jitter and network latency.
 
 The clock jitter is the estimated random error on a given computer's
@@ -34,7 +33,7 @@ mean for every million clock ticks of the NTP server, the local
 computer could be off by 10 ticks. The network latency is a measure of
 the round trip time of the message passed between the local computer
 to the NTP server and back. This is typically on the order of
-milliseconds. <TODO citation> <development>
+milliseconds~\cite{Sage}.
 
 The Ceph test cluster includes three types of computers named Mira,
 Plana, and Burnupi. Miras and Planas use Intel-based chips, while
@@ -97,8 +96,8 @@ clock to affect the measurements gathered in the simulation. This has
 the added benefit of allowing the simulation to run at a speed much
 greater than real time.
 
-We have chosen to use an environment called clknetsim <TODO citation> to
-conduct our simulations. This choice was made for a variety of
+We have chosen to use an environment called clknetsim %% TODO reference to clknetsim repo?
+to conduct our simulations. This choice was made for a variety of
 reasons. Clknetsim is an open-source simulation package developed and
 used by a major contributor to the chrony project <TODO citation> and the
 linuxptp project <TODO citation> to test these protocol implementations. In
