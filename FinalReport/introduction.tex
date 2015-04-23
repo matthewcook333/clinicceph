@@ -15,21 +15,33 @@ load across all nodes.
 
 For this project, we were tasked with determining a means by which to
 asynchronously geo-replicate the contents of a Ceph cluster. The task
-also specifies requirements for performance and consistency. We were
-able to find a solution to the problem presented to us, and our
-completed goals are in line with those that we set at the beginning of
-the project (see appendix~\ref{sec:plan} for details). We have
-completed both a proof of correctness of our approach and analyzed 
-the performance impact of our algorithm on a cluster.
-Chapter~\ref{sec:proof} demonstrates both the theoretical correctness
-and theoretical performance of our
-algorithm. Chapter~\ref{sec:analysis} covers a concrete demonstration
-of the same. In addition to this report, we are also
-delivering a set of utilities and scripts to replicate and extend our
-analysis. These scripts will also be useful in analyzing clusters on 
-which consistent geo-replication is enabled. Using the results of this
-clinic, a future team should be able to quickly implement our
-algorithm in Ceph.
+also specifies requirements for performance and consistency. This
+required overcoming the following complications:
+
+\begin{itemize}
+\item Inability to perfectly synchronize clocks between machines
+\item Lack of knowledge of causality relationships between reads and
+  writes in the cluster, because Ceph permits out-of-band
+  communication.
+\item Insufficient per-node knowledge to fully reconstruct the state
+  of a cluster at any specific time as Ceph is currently implemented.
+\end{itemize}
+
+Chapter~\ref{sec:proof} covers a theoretical proof and performance
+analysis of our proposed algorithm by showing that short per-node holds on
+incoming writes can, if NTP behaves within spec, provide guaranteed
+safe snapshot points in time. Chapters~\ref{sec:analysis} and
+\ref{sec:data-results} cover a concrete demonstration of the same,
+finding that write holds of 3-20 milliseconds (depending on clock and
+network quality) with a real NTP implementation do in fact provide
+safe snapshot points. 
+
+In addition to this report, we are also delivering a set of utilities
+and scripts to replicate and extend our analysis. These scripts will
+also be useful in analyzing clusters on which consistent
+geo-replication is enabled. Using the results of this clinic project,
+a future team should be able to quickly implement our algorithm in
+Ceph.
 
 In Appendix~\ref{sec:terms} on page~\pageref{sec:terms} we provide
 a glossary including technical terms we use in this report.
