@@ -7,6 +7,7 @@ Created on 10 March 2015
 import simplejson
 import os
 import re
+import sys
 
 # this is path to file
 # uncomment to direct to path of file
@@ -18,9 +19,23 @@ newFileName = 'newtimestamps5apr2015v2.json'
 
 invalidLinesFile = "badlines.txt"
 
-fillerLine = "{\"date\": -1, \"time\": 0.0, \"originTS\": 0.0, \"receiveTS\": 0.0, \"transmitTS\": 0.0, \"destTS\": 0.0}]}"
-fillerEndLine = fillerLine + "]\n")
-fillerMidLine = fillerLine + ",\n"
+usage = "usage: python cleanJson.py [-f, -t]"
+
+fillerLine = ""
+for arg in sys.argv:
+    if "-f" or "-freqOffset":
+        fillerLine = "{\"date\": -1, \"time\": 0.0, \"freqOffset\": 0.0}]"
+    elif "-t" or "-timestamps":
+        fillerLine = "{\"date\": -1, \"time\": 0.0, \"originTS\": 0.0, \"receiveTS\": 0.0, \"transmitTS\": 0.0, \"destTS\": 0.0}]"
+    elif "-h" or "--help":
+        print usage
+
+if fillerLine == "":
+    print usage
+    sys.exit(0)
+
+fillerEndLine += "}]\n"
+fillerMidLine += "},\n"
 
 def checkForError(f):
     try:
@@ -30,7 +45,7 @@ def checkForError(f):
         return False
 
 def makeJsonLines(line):
-    return "[" + line + "\n{\"date\": 1000, \"time\": 1000.235, \"originTS\": 1000.451, \"receiveTS\": 1000.451, \"transmitTS\": 1000.451, \"destTS\": 1000.451}]"
+    return "[" + line + "\n" + fillerLine
 # loop through checking for errors   
 lineCounter = 0
 firstNode = True

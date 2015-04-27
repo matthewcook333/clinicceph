@@ -23,58 +23,12 @@ def is_number(s):
         return True
     except ValueError:
         return False
-        
-def removeLine(file_string, lineno):
-    # this is to get both current line and line before it
-    line = None
-    list_lines = file_string.split("\n") 
-    # specific error of being one line short for just a number, so read an
-    # extra line if needed
-    if is_number(list_lines[lineno-2]):
-        line = list_lines[lineno-2]
-    else:
-        line = list_lines[lineno-1]
-    print("malformed: " + line + " at line: " + str(lineno))
-    list_lines.remove(line)
-    return '\n'.join(list_lines)
 
 fileName = 'newfreqOffset2.json'
 os.chdir(r'/Users/mattcook/Documents')
 
-def checkForError(f):
-    try:
-        simplejson.loads(f)
-        return (False, f)
-    except Exception as e:
-        # "Expecting , delimiter: line 34 column 54 (char 1158)"
-        # position of unexpected character after '"'
-        unexp = int(re.findall(r'\d+', str(e))[0])
-        #print e
-        #print "line " + str(unexp)
-        new_string = removeLine(json_string, unexp)
-        return (True, new_string)
-  
-flag = True    
-errorCount = 0
 json_data = open(fileName)
-json_string = json_data.read()
-while flag:
-    (flag, json_string) = checkForError(json_string)
-    # error count will be off by 1, but this is to just get overall magnitude
-    errorCount += 1
-
-print "num of loads required (for cleaning file): " + str(errorCount)
-
-if errorCount > 1:
-    clean_file = open("new" + fileName, "w")
-    clean_file.write(json_string)
-    clean_file.close()
-
-data = simplejson.loads(json_string)
-
-print "Actually starting!"
-
-
+data = simplejson.load(json_data)
 
 nodeSchema = {
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -123,8 +77,6 @@ nodeSchema = {
 figure_num = 1
 
 axes = plt.gca()
-#axes.set_xlim([xmin,xmax])
-#axes.set_ylim([0,0.005])
 
 nodeNames = ["burnupi", "mira", "plana"]
 numNodes = [0 for x in xrange(len(nodeNames))]
@@ -179,7 +131,6 @@ for node in data:
 
         plt.scatter(times, freqOffsets)
     except ValidationError as e:
-        #print e
         print "Error on node: " + str(node['node'])
 
 # label all plots
@@ -191,7 +142,7 @@ for i in range(0, 3):
   plt.title('Time vs Frequency Offset Across %d %s Nodes' % (numNodes[i], nodeNames[i]))
 
 overallStdDevs = []
-# # make next three histogram plots based on data on each cluster
+# make next three histogram plots based on data on each cluster
 for i in range(0, 3):
   plt.figure(i+4)
 
@@ -209,18 +160,8 @@ for i in range(0, 3):
   overallStdDevs += stdDevs
 
   entries, bin_edges, patches = plt.hist(flattened, bins = 100, facecolor = 'green', range = (-40, 40))
-  # add a 'best fit' line
-  #y = mlab.normpdf(bin_edges, mu, sigma)
-  #plt.plot(bin_edges, y, 'r--')
-
-  # for normalizing
-  #for item in patches:
-  #    item.set_height(item.get_height()/sum(entries))
-      
 
   axes = plt.gca()
-  #axes.set_xlim([0,.005])
-  #axes.set_ylim([0,0.001])
 
   plt.xlabel('Freq Offset (PPM)')
   plt.ylabel('Count')

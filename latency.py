@@ -24,61 +24,12 @@ def is_number(s):
         return True
     except ValueError:
         return False
-        
-def removeLine(file_string, lineno):
-    # this is to get both current line and line before it
-    line = None
-    list_lines = file_string.split("\n")
-    # specific error of being one line short for when a line is just a number, 
-    # so read an extra line if needed
-    if is_number(list_lines[lineno-2]):
-        line = list_lines[lineno-2]
-    else:
-        line = list_lines[lineno-1]    
-
-    print("malformed: " + line + " at line: " + str(lineno))
-    list_lines.remove(line)
-    return '\n'.join(list_lines)
 
 fileName = 'timestamps.json'#newtimestamps5apr2015v2.json'
 os.chdir(r'/Users/mattcook/Desktop')
 
-def checkForError(f):
-    try:
-        simplejson.loads(f)
-        return (False, f)
-    except Exception as e:
-        # "Expecting , delimiter: line 34 column 54 (char 1158)"
-        # position of unexpected character after '"'
-        unexp = int(re.findall(r'\d+', str(e))[0])
-        #print e
-        #print "line " + str(unexp)
-        new_string = removeLine(json_string, unexp)
-        return (True, new_string)
-  
-flag = True    
-errorCount = 0
 json_data = open(fileName)
-#json_string = json_data.read()
-#while flag:
-#    (flag, json_string) = checkForError(json_string)
-    # error count will be off by 1, but this is to just get overall magnitude
-#    errorCount += 1
-
-print "num of loads required (for cleaning file): " + str(errorCount)
-
-if errorCount > 1:
-    clean_file = open("new" + fileName, "w")
-    clean_file.write(json_string)
-    clean_file.close()
-
 data = simplejson.load(json_data)
-#json_string = json_data.read()
-#data = simplejson.loads(json_string)
-
-print "Actually starting!"
-
-
 
 nodeSchema = {
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -141,8 +92,6 @@ nodeSchema = {
 figure_num = 1
 
 axes = plt.gca()
-#axes.set_xlim([xmin,xmax])
-#axes.set_ylim([0,0.005])
 
 nodeNames = ["burnupi", "mira", "plana"]
 numNodes = [0 for x in xrange(len(nodeNames))]
@@ -179,27 +128,15 @@ for node in data[:55]:
         truetimes = []
         truevalues = []
         for time, value in itertools.izip(times,values):
-            #if value > 10.0:
-              #print "TIME: " + str(time) +  " has value: " + str(value) + " and is: " + str(value > 10)
-            if time > 4929100000.0:# or value > 10.0:
+            if time > 4929100000.0:
               continue
-              #print "Deleting extra times or values: " + str(time) + " has value: " + str(value)
-              #times.remove(time)
-              #values.remove(value)
             elif value > 200.0 or value < 0.0:
               print "data spike: " + str(value) + " on node: " + node['node']
-              #times.remove(time)
-              #values.remove(value)
-              #prevTime = time
-            elif time < 0 : #|| time > finalTime :
-              #print "time jump: final time is " + str(finalTime) + " with current " + str(time) + " on node: " + node['node']
+            elif time < 0 : 
               print "Deleting dummy time: " + str(time)
-              #times.remove(time)
-              #values.remove(value)
             else:
               truetimes.append(time)
               truevalues.append(value)
-              #prevTime = time
         times = truetimes
         values = truevalues
         # check which cluster this data belongs to, plot to respective graph
