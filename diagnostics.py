@@ -32,7 +32,7 @@ histogramRange = (0, 0.005)
 graphType = ""
 col_heads = []
 graphLabel = ""
-usage = 'usage: diagnostics.py -i <inputfile> -o <outputfile> {-f, -t}'
+usage = 'usage: diagnostics.py -i <inputfile> {-f, -t}'
 
 nodeSchema = {
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -68,8 +68,6 @@ nodeSchema = {
   ]
 }
 
-inputfile = ''
-outputfile = ''
 try:
   opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
 except getopt.GetoptError:
@@ -80,9 +78,7 @@ for opt, arg in opts:
      print usage
      sys.exit()
   elif opt in ("-i", "--ifile"):
-     inputfile = arg
-  elif opt in ("-o", "--ofile"):
-     outputfile = arg
+     fileName = arg
   elif opt in ("-f", "--freqOffset"):
     graphType = "freqOffset"
     graphLabel = "Frequency Offset (PPM)"
@@ -118,10 +114,6 @@ for opt, arg in opts:
       }})
     nodeSchema["properties"]["entries"]["items"].update({"required" : 
       ["date", "time", "originTS", "receiveTS", "transmitTS", "destTS"]})
-            
-print 'Input file is "', inputfile
-print 'Output file is "', outputfile
-
 
 # make sure graph type is specified
 if graphType == "":
@@ -205,7 +197,8 @@ for i in range(len(nodeNames)):
   for (key, value) in dataSet[i].items():
     (muNode, sigmaNode) = norm.fit(value)
     stdDevs.append(sigmaNode)
-    print "node: " + key + " has mean: " + str(muNode) + " and stdDev: " + str(sigmaNode)
+    # uncomment to print stats of each node
+    #print "node: " + key + " has mean: " + str(muNode) + " and stdDev: " + str(sigmaNode)
     flattened += value
 
   # best fit of data
@@ -218,7 +211,7 @@ for i in range(len(nodeNames)):
   plt.xlabel(graphLabel)
   plt.ylabel('Count')
   plt.title("Histogram of %s" % (graphLabel))
-  print r'$\mathrm{Histogram\ of\ %s\ for\ %s\ nodes:}\ \mu=%.3f,\ \sigma=%.3f$' %(graphType, nodeNames[i], mu, sigma)
+  print "Histogram of %s for %s nodes: mu=%.3f, sigma=%.3f$" %(graphType, nodeNames[i], mu, sigma)
   plt.savefig(graphType + "histogram" + str(i))
 
 print "Overall Standard Dev across " + str(len(overallStdDevs)) + " nodes is " + str(sum(overallStdDevs)/float(len(overallStdDevs)))
