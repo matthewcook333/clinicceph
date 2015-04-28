@@ -39,6 +39,10 @@ Where the input is a JSON file, the -f command is for use with freqOffset
 JSON files, and -t is for use with timestamps JSON files for plotting 
 latency values.
 
+This file also outputs 6 files, scatterplots for each type of node (burnupi, 
+mira, and plana), and histograms for each type. The types of nodes can be 
+changed within the file.
+
 ### cleanJson.py
 
 This file contains a script to clean invalid lines from JSON files containing 
@@ -49,5 +53,7 @@ Usage is as follows:
 
 where the inputFile.json is the JSON file to be cleaned, outputFile.json is 
 the name of the newly created cleaned JSON file, -f command is for use with 
-freqOffset JSON files and -t is for use with timestamps JSON files.
+freqOffset JSON files and -t is for use with timestamps JSON files. This also
+makes a file of the invalid lines in badlines.txt (this name can be changed
+within the file).
 
