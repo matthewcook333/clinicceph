@@ -32,7 +32,7 @@ histogramRange = (0, 0.005)
 graphType = ""
 col_heads = []
 graphLabel = ""
-usage = 'usage: diagnostics.py -i <inputfile> {-f, -t}'
+usage = 'usage: diagnostics.py -i <inputfile> [-f | -t]'
 
 nodeSchema = {
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -69,12 +69,12 @@ nodeSchema = {
 }
 
 try:
-  opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
+  opts, args = getopt.getopt(argv,"hi:o:",["ifile="])
 except getopt.GetoptError:
   print usage
   sys.exit(2)
 for opt, arg in opts:
-  if opt == '-h':
+  if opt == "-h" or opt == "--help":
      print usage
      sys.exit()
   elif opt in ("-i", "--ifile"):

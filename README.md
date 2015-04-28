@@ -33,18 +33,21 @@ specified in the function comments.
 This file contains a script to plot diagnostics information from cluster data. 
 Usage of this file is as follows:
 
-`python diagnostics.py -i <inputfile> {-f, -t}`
+`python diagnostics.py -i <inputfile> [-f | -t]`
 
-Where the input is a JSON file, the -f command is for use with freqOffset JSON files,
-and -t is for use with timestamps JSON files for plotting latency values.
+Where the input is a JSON file, the -f command is for use with freqOffset 
+JSON files, and -t is for use with timestamps JSON files for plotting 
+latency values.
 
 ### cleanJson.py
 
-This file contains a script to clean invalid lines from JSON files containing cluster
-data for either freqOffset or timestamp information. Usage is as follows:
+This file contains a script to clean invalid lines from JSON files containing 
+cluster data for either freqOffset or timestamp information. 
+Usage is as follows:
 
-`python cleanJson.py {-f, -t}`
+`python cleanJson.py -i inputFile.json -o outputFile.json [-f | -t]`
 
-where the -f command is for use with freqOffset JSON files
-and -t is for use with timestamps JSON files.
+where the inputFile.json is the JSON file to be cleaned, outputFile.json is 
+the name of the newly created cleaned JSON file, -f command is for use with 
+freqOffset JSON files and -t is for use with timestamps JSON files.
 

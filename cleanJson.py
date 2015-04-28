@@ -11,26 +11,36 @@ import sys
 
 # this is path to file
 # uncomment to direct to path of file
-# os.chdir(r'/Users/mattcook/Documents')
+# os.chdir(r'/Users/username/path')
 # this is name of file
-fileName = 'timestamps5apr2015v2.json'
+fileName = ""
 # this is name of new clean file to be made
-newFileName = 'newtimestamps5apr2015v2.json'
+newFileName = ""
 
 invalidLinesFile = "badlines.txt"
 
-usage = "usage: python cleanJson.py [-f, -t]"
+usage = "usage: python cleanJson.py -i inputFile.json -o outputFile.json [-f | -t]"
 
 fillerLine = ""
-for arg in sys.argv:
-    if "-f" or "-freqOffset":
-        fillerLine = "{\"date\": -1, \"time\": 0.0, \"freqOffset\": 0.0}]"
-    elif "-t" or "-timestamps":
-        fillerLine = "{\"date\": -1, \"time\": 0.0, \"originTS\": 0.0, \"receiveTS\": 0.0, \"transmitTS\": 0.0, \"destTS\": 0.0}]"
-    elif "-h" or "--help":
-        print usage
+try:
+  opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
+except getopt.GetoptError:
+  print usage
+  sys.exit(2)
+for opt, arg in opts:
+  if opt == "-h" or "--help":
+    print usage
+    sys.exit()
+  elif opt in ("-i", "--ifile"):
+    fileName = arg
+  elif opt in ("-o", "--ofile"):
+    newFileName = arg
+  elif opt in ("-f", "--freqOffset"):
+    fillerLine = "{\"date\": -1, \"time\": 0.0, \"freqOffset\": 0.0}]"
+  elif opt in ("-t", "--timestamps"):
+    fillerLine = "{\"date\": -1, \"time\": 0.0, \"originTS\": 0.0, \"receiveTS\": 0.0, \"transmitTS\": 0.0, \"destTS\": 0.0}]"
 
-if fillerLine == "":
+if fillerLine == "" or fileName == "" or newFileName = "":
     print usage
     sys.exit(0)
 
