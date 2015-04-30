@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import simplejson, os, itertools, re, sys, traceback, math, getopt
 from scipy.stats import norm
 from jsonschema import validate, ValidationError
+import numpy as np
 
 # edit this to change path
 #os.chdir(r'/Users/username/path')
@@ -17,13 +18,10 @@ fileName = ""
 nodeNames = ["burnupi", "mira", "plana"]
 # max value. Any value above this will be removed. This is to remove faulty
 # incorrectly logged values
-maxValue = 1000
+maxValue = 900.0
 # range for histogram plot
-histogramRange = (0, 0.005)
+histogramRange = (0, 5)
 
-graphType = ""
-col_heads = []
-graphLabel = ""
 usage = 'usage: diagnostics.py -i <inputfile> [-f | -t]'
 
 nodeSchema = {
@@ -61,6 +59,9 @@ nodeSchema = {
 }
 
 def main(argv):
+  graphType = ""
+  col_heads = []
+  graphLabel = ""
   try:
     opts, args = getopt.getopt(argv,"hi:o:tf",["ifile=", "--help", "--freqOffset", "--timestamps"])
   except getopt.GetoptError:
@@ -86,7 +87,7 @@ def main(argv):
         {"required" : ["date", "time", "freqOffset"]})
     elif opt in ("-t", "--timestamps"):
       graphType = "latency"
-      graphLabel = "Latency (s)"
+      graphLabel = "Latency (ms)"
       col_heads = ['date', 'time', 'originTS', 'receiveTS', 'transmitTS', 'destTS']
       nodeSchema["properties"]["entries"]["items"]["properties"].update( {
         "originTS": {
@@ -136,8 +137,8 @@ def main(argv):
       if graphType == "latency":
         entireRoundTrip = [a - b for a, b in zip(col_wise[5][1:], col_wise[2][1:])]
         timeAtServer = [a - b for a, b in zip(col_wise[4][1:], col_wise[3][1:])]
-        # round trip time
-        values = [a - b for a, b in zip(entireRoundTrip, timeAtServer)]
+        # round trip time in milliseconds
+        values = [(a - b) * 1000.0 for a, b in zip(entireRoundTrip, timeAtServer)]
       elif graphType == "freqOffset":
         values = list(col_wise[2][1:])
 
@@ -146,12 +147,12 @@ def main(argv):
       truetimes = []
       truevalues = []
       for time, value in itertools.izip(times,values):
-        if value > maxValue or value < 0.0:
-          # deleting bad values
-          print "data spike: " + str(value) + " on node: " + node['node']
-        elif time < 0 : 
+        if time < 0:
           # deleting incorrect or padded entry
           continue
+        elif value > maxValue or value < 0.0:
+          # deleting bad values
+          print "data spike: " + str(value) + " on node: " + node['node']
         else:
           truetimes.append(time)
           truevalues.append(value)
@@ -197,15 +198,16 @@ def main(argv):
 
     # best fit of data
     (mu, sigma) = norm.fit(flattened)
-    print "overall these have std dev: " + str(sum(stdDevs)/float(len(stdDevs)))
+    median = np.median(flattened)
+    print nodeNames[i] + " average standard deviation: " + str(sum(stdDevs)/float(len(stdDevs)))
     overallStdDevs += stdDevs
 
     entries, bin_edges, patches = plt.hist(flattened, bins = 100, facecolor = 'green', range = histogramRange)
     axes = plt.gca()
     plt.xlabel(graphLabel)
-    plt.ylabel('Count')
+    plt.ylabel('Packet Count')
     plt.title("Histogram of %s" % (graphLabel))
-    print "Histogram of %s for %s nodes: mu=%.3f, sigma=%.3f$" %(graphType, nodeNames[i], mu, sigma)
+    print "Histogram of %s for %s nodes: mu=%.3f, sigma=%.3f, median=%.3f" %(graphType, nodeNames[i], mu, sigma, median)
     # name of histogram graph is here
     plt.savefig(graphType + "histogram" + str(i))
 
