@@ -27,14 +27,43 @@ required overcoming the following complications:
   of a cluster at any specific time as Ceph is currently implemented.
 \end{itemize}
 
-Chapter~\ref{sec:proof} covers a theoretical proof and performance
-analysis of our proposed algorithm by showing that short per-node holds on
-incoming writes can, if NTP behaves within spec, provide guaranteed
-safe snapshot points in time. Chapters~\ref{sec:analysis} and
-\ref{sec:results} cover a concrete demonstration of the same,
-finding that write holds of 3-20 milliseconds (depending on clock and
-network quality) with a real NTP implementation do in fact provide
-safe snapshot points. 
+Our solution was to use a time synchronization protocol to provide
+uncertainty bounds on the error for each clock in the cluster. These
+uncertainty bounds can be used to create short write holds at each node, 
+called freeze windows. By relating them to the uncertainty in the clock error,
+we can be certain that they overlap, and that overlap is when we can take a
+consistent snapshot of the system. More details about our solution are covered 
+in Chapter~\ref{sec:approach}.
+
+There are a number of other solutions to problems similar to ours. Logical
+clocks are often used to order events, as well as timestamping. Google has
+implemented a library called TrueTime, which provides similar uncertainty
+bounds on the real time in their Spanner database. Chapter~\ref{sec:rel-work} 
+describes these algorithms and why they are not satisfactory solutions for our 
+problem.
+
+% chapter overview paragraph
+Chapter~\ref{sec:proof} covers a theoretical proof for our algorithm, arguing
+that our solution will allow us to take a consistent snapshot by preserving 
+event causal relationships. Chapter~\ref{sec:proof} also contains a 
+performance analysis of our proof, arguing that the freeze windows will not be 
+long enough to impact performance and that our solution will not put a 
+significant burden on network availability or node performance. 
+
+Chapter~\ref{sec:results} covers our concrete testing of our solution, which
+includes:
+\begin{itemize}
+\item the collection of data from a real Ceph cluster to create latency and
+clock drift models;
+\item simulations showing that the uncertainty bounds provided by the Network 
+Time Protocol (NTP) behave as expected;
+\item simulations that test NTP's performance in a multitude of cluster
+configurations.
+\end{itemize}
+The goal of Chapter~\ref{sec:results} is to show that our solution will work
+in practice, not just in theory.
+
+
 
 In addition to this report, we are also delivering a set of utilities
 and scripts to replicate and extend our analysis. These scripts will
