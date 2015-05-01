@@ -37,11 +37,11 @@ behavior of a live Ceph cluster.
 
 To test on a live Ceph cluster, we need to log data on 
 instances of NTP running on the cluster. The implementation for NTP 
-used on the Ceph cluster is called \textit{ntpd}. \textit{ntpd} is a
+used on the Ceph cluster is called \texttt{ntpd}. \texttt{ntpd} is a
 daemon that synchronizes the clocks on each machine using NTP and
 provides diagnostic data on the machines' clocks and network 
 communications. The two parameters of interest are frequency offset and
-network latency. The \textit{ntpd} daemons were running on a Ceph
+network latency. The \texttt{ntpd} daemons were running on a Ceph
 test cluster that include three types of computers named Mira,
 Plana, and Burnupi. Miras and Planas use Intel-based chips, while
 Burnupi uses AMD chips.
@@ -123,10 +123,10 @@ of a synchronization and the quality of the clocks involved.
 % the added benefit of allowing the simulation to run at a speed much
 % greater than real time.
 
-We have chosen to use an environment called \textit{clknetsim} %% TODO reference to clknetsim repo?
-to conduct our simulations. \textit{Clknetsim} is an open-source simulation 
-package developed and used by a major contributor to the \textit{chrony}
-project~\citep{chrony} and the \textit{linuxptp} project~\citep{linuxptp}
+We have chosen to use an environment called \texttt{clknetsim} %% TODO reference to clknetsim repo?
+to conduct our simulations. \texttt{Clknetsim} is an open-source simulation 
+package developed and used by a major contributor to the \texttt{chrony}
+project~\citep{chrony} and the \texttt{linuxptp} project~\citep{linuxptp}
 to test these protocol implementations. In
 comparison to commercial network simulation products, it provides a 
 simple codebase and feature set targeted at measuring 
@@ -135,7 +135,7 @@ modifications of the clknetsim package. These extensions were made in
 order to expose state parameters of NTP that were not being exposed, 
 including the maximum error term.
 
-Clknetsim makes use of the environment variable \textit{LD\_PRELOAD} in
+Clknetsim makes use of the environment variable \texttt{LD\_PRELOAD} in
 the Linux library to intercept system calls that time sychronization 
 libraries make on their hosts. Using these intercepted calls, 
 clknetsim is able to monitor and capture the internal state of
