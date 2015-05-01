@@ -7,7 +7,7 @@ of the problem and the constraints that were placed on our solution.
 
 \section{Ceph}
 
-The architecture and requirements of Ceph place a lot of constraints on our
+The architecture and requirements of Ceph place many constraints on our
 solution. Ceph is a distributed file system, meaning that data is stored in
 many different nodes in a Ceph cluster. There
 is no central node through which all read and write requests are sent. 
@@ -19,7 +19,7 @@ Ceph maintains very strong consistency guarantees on the data that's
 stored in its system. It is designed to replicate data on multiple nodes, such 
 that one node's failure will not cause a permanent loss of data. This will 
 maintain a user's data, even though it is common for nodes to fail in a large 
-data center. Ceph will also hold a
+data center given the sheer number of nodes. Ceph will also hold a
 confirmation of a write's success until it is certain that the data has been 
 stored and properly replicated. When a client receives a confirmation of a write, they can be certain that the data has been received and replicated properly. These characteristics ensure that a user's 
 data will be kept consistent.
