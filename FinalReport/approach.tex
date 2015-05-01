@@ -102,7 +102,11 @@ Our algorithm has four phases:
 \item \emph{Replication}
   
   If the snapshot passes the confimation phase, then we begin to transfer the 
-  data in the snapshot to the remote data center. Replication can be done as a 
+  data in the snapshot to the remote data center. Since the data in the 
+  cluster is distributed, each node must determine what data needs to be 
+  replicated to the remote center. The snapshot is taken when the node first 
+  freezes, so it is simply the state of the data in the node before the node 
+  froze. Replication can be done as a 
   background process, so while replication is underway, the next 
   synchronization phase begins.
 

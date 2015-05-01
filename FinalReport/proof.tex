@@ -8,42 +8,50 @@ As described in Chapter~\ref{sec:description}, a snapshot would be
 inconsistent if it captured an event, but not an earlier event that
 caused it. To provide an intuitive example, let $A$ be some event that
 caused another event, $B$.  For example, $A$ could be a new user added
-to a database. Event $B$ could be a change to someone's friend list to
+to a database. Event $B$ could be a change to another user's friend list to
 include $A$. If we captured $B$ in our snapshot, but not $A$, our
-snapshot would contain the friend relation, but not the new user. This
-could, depending on implementation and language, cause segfaults or
-nullptrexceptions or the like.
+snapshot would contain the friend relation, but not the new user. See 
+Figure~\ref{fig:consistency} for examples of consistent and inconsistent
+snapshots.
 
-More formally, here is the statement that we want to prove:
+More formally, here is the statement that we want to prove: {\em let $A$ and $B$ be events in our system, where $B$ was caused by
+$A$. Our goal is to prove that if $B$ was captured in our snapshot, then $A$ must have been as well.}
 
-Let $A$ and $B$ be events in our system, where $B$ was caused by
-$A$. If $B$ was captured in our snapshot, then $A$ must have been as
-well.
+Figure~\ref{fig:consistentoverlap} demonstrates the concept that we're going
+to prove here.
+
+\begin{figure}[!htbp]
+  \centering
+  \caption{This is all possible event orders given that A caused B. Yellow and green boxes are node freeze windows and the dotted blue line is the overlap where the snapshot is taken. We can see that A is captured by the snapshot if B is, meaning that the snapshot is consistent.} 
+  \label{fig:consistentoverlap}
+  \includegraphics[width=0.75\textwidth]{consistentoverlap.png}
+\end{figure}
 
 First, define $T_A$ to be the (objective) time at which $A$ occurred
 and $T_B$ to be the (objective) time at which $B$ occurred. Since $A$
 caused $B$, we know that $A$ must have taken place before $B$, meaning
 $T_A < T_B$.
 
-Our solution guarantees that all of the freeze windows of the nodes in
-our system will overlap for at least one point in time, or in other
-words at some point or contiguous points in time, all nodes will be
+In Chapter~\ref{sec:approach}, we shows that our solution guarantees that all 
+of the freeze windows of the nodes in
+our system will overlap when we are taking a snapshot. In other
+words at some point in time or for some time period, all nodes will be
 frozen.  During this interval, the cluster as a whole will not confirm
 completion of to write events. Therefore, when we are considering the
 order of events, we can collapse that whole interval into a single
-event and we can consider the start time of the interval to be the
-time of the event. Call the event $F$ and its time $T_F$.
+event $F$ and we can consider the start time of the interval to be the
+time of the event $T_F$.
 
-Let's assume, for the sake of contradiction, that there is a series of
-events that could violate our proposed invariant. More specifically,
+Assume, for the sake of contradiction, that there is a series of
+events that could violate the invariant that an event would only be captured in a snapshot if all events that caused that event were captured as well. More specifically,
 let us have events $C$ and $D$ such that $C$ caused $D$. Assume that
 it is possible for $D$ to have been captured in the snapshot while $C$
 was not.
 
-Recall that each node's portion of the snapshot occurs when that node
-first freezes. No other events will occur on the node between when it
-takes its snapshot (i.e. the beginning of its freeze interval) and
-$F$, the moment when all nodes are frozen. By definition, if $D$ was
+Recall from Chapter~\ref{sec:approach} that each node's portion of the snapshot occurs when that node
+first freezes. No other events will occur on that node between when it
+takes its snapshot (i.e., the beginning of its freeze interval) and
+$F$, the moment when all nodes are frozen. By our assumption above, if $D$ was
 included in the snapshot, it must have happened before $F$, meaning
 $T_D <T_F$. Since $C$ caused $D$, it must have happened temporally
 before $D$.  Since $C$ was not captured in the snapshot, it must have
@@ -51,11 +59,9 @@ happened either after $F$, or between its node's freeze start time and
 $F$. The first is clearly a contradiction, since $D$ happened before
 $F$. The second is a contradiction, because then $C$ would not have
 completed before $F$, so it could not have caused anything before
-$F$. So, we know that our original assumption must have been incorrect
+$F$. So, we know that our original assumption that $D$ was captured and $C$ was not must have been incorrect
 and, therefore, our statement must be true for any pair of events in
-the cluster that are causally related.
-
-Since our statement is true for any two events in our system with a
+the cluster that are causally related. To extend this further, since our statement is true for any two events in our system with a
 causal relationship, we know that our snapshot must be consistent.
 
 \section{Performance}
