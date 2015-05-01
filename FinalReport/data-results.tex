@@ -29,12 +29,12 @@ a given node and its NTP server. This makes testing correctness in the
 real world impossible. As a result, simulations will factor heavily into 
 our analysis of \texttt{ntpd}.
 
-This chapter is split into two sections. The first section includes
-the setup of the simulation environment for NTP and its parameters
-and the data collection of those parameters on a live Ceph test cluster.
-The second section consists of the results and analyses from the simulations,
-including the correctness of the NTP uncertainty bounds and the implied
-performance from the size of the freeze windows. 
+This chapter is split into two sections. The first section discusses data collection 
+on a Ceph test cluster. This section also details how the collected data
+can be used to improve the testing of \texttt{ntpd} in simulations.
+The second section analyzes the results of simulations. It seeks to verify that 
+the measurements and values \texttt{ntpd} reports are reasonable, correct, and
+accurate. This section includes a discussion of performance under various network conditions.  
 
 We find that NTP and \texttt{ntpd} are a capable algorithm and implementation.
 The \texttt{ntpd} program will provide correct values under any reasonable 
@@ -55,44 +55,66 @@ In order to accurately simulate the
 characteristics of a real Ceph cluster to test \texttt{ntpd}, we need to model the
 behavior of a real Ceph cluster.
 
-To test on a live Ceph cluster, we need to log data on 
-instances of NTP running on the cluster. The implementation for NTP 
-used on the Ceph cluster is called \texttt{ntpd}. The daemon \texttt{ntpd} 
-synchronizes the clocks on each machine using the NTP protocol and
-provides diagnostic data on the machines' clocks and network 
-communications. The two parameters of interest are frequency offset and
-network latency. The \texttt{ntpd} daemons were running on a Ceph
-test cluster that include three types of computers named Mira,
+To observe how \texttt{ntpd} interacts with a live Ceph cluster,
+we logged diagnostic data on a test Ceph cluster for a period of months.
+The test cluster on which we logged data includes 
+three classifications of computers, named here Mira,
 Plana, and Burnupi. Miras and Planas use Intel-based chips, while
 Burnupi uses AMD chips.
 
-The frequency offset is the estimated random error on a given computer's
-clock drift from the NTP server, and is typically measured in Parts
-Per Million (PPM). For example, a PPM of 10 for frequency offset would
+Of the diagnostic data being logged, 
+we considered two parameters most interesting: clock frequency offset and
+network latency. 
+The frequency offset is the estimated random error on a given node's
+clock drift in comparison to the NTP server, and is typically measured in Parts
+Per Million (PPM). For example, a clock frequency offset measurement of 10 PPM would
 mean for every million clock ticks of the NTP server, the local
-computer could be off by 10 ticks. The network latency is a measure of
+%TODO: is this really freq offset? Is there a better way to describe it?
+node's clock could be off by 10 ticks. The network latency is a measure of
 the round trip time of the message passed between a local machine in
 the Ceph cluster to the NTP server and back. The round trip time
 is typically on the order of milliseconds~\citep{Sage}.
 
 %TODO: Do we need 4 sig figs here? I doubt we can claim more than one or two...
 The histogram in Figure~\ref{fig:latency-hist} shows the logged
-values of network latency in the cluster. The mean is 2.668 ms, the 
-standard deviation is 10.304 ms, and the median is 0.643 ms. The 
+values of network latency in the cluster. The 
 difference in network latency between each type of machine is not
 statistically significant, as we would expect given that the network
 latency between machines should not depend on the types of 
 machines in the network. 
+%TODO: Did you actually do a p-test? Do you have a significance level if you did?
 
 \begin{figure}[h]
   \centering
-  \caption{~Histogram of network latency across 234 nodes in a Ceph test cluster.} 
+  \caption{~Histogram of network latency across 234 nodes in a Ceph test cluster. The mean is 2.668 ms, the 
+  standard deviation is 10.304 ms, and the median is 0.643 ms.} 
   \label{fig:latency-hist}
   \includegraphics[width=0.8\textwidth]{latency-hist.png}
 \end{figure}
 
-Figure~\ref{fig:burnupi-hist}, Figure~\ref{fig:mira-hist},
-and Figure~\ref{fig:plana-hist} show the behavior of clock frequency offset
+\begin{figure}[!htbp]
+  \centering
+  \caption{~Histogram of NTP's frequency offset for Burnupi machines in the Ceph test cluster.}
+  \label{fig:burnupi-hist}
+  \includegraphics[width=0.8\textwidth]{burnupi-freq-offset.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  \caption{~Histogram of NTP's frequency offset for Mira machines in the Ceph test cluster.}
+  \label{fig:mira-hist}
+  \includegraphics[width=0.8\textwidth]{mira-freq-offset.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  \caption{~Histogram of NTP's frequency offset for Plana machines in the Ceph test cluster.}
+  \label{fig:plana-hist}
+  \includegraphics[width=0.8\textwidth]{plana-freq-offset.png}
+\end{figure}
+
+Figures~\ref{fig:burnupi-hist},~\ref{fig:mira-hist},
+and~\ref{fig:plana-hist} show the behavior of clock frequency offset
 on the three types of machines in the Ceph cluster. Despite the different offsets, 
 these are consistent with a normal distribution. These values are reasonable 
 as we would generally expect frequency offset to be at most $\pm 20$ PPM. 
@@ -103,30 +125,7 @@ standard deviation 0.356, and Plana nodes with 13.341 PPM with average standard 
 the AMD chips have primarily negative clock frequency offset, while the 
 Mira and Plana machines with Intel chips have primarily positive 
 clock frequency offsets.
-
-\begin{figure}[h]
-  \centering
-  \caption{~Histogram of NTP's frequency offset for Burnupi machines in the Ceph test cluster.}
-  \label{fig:burnupi-hist}
-  \includegraphics[width=0.8\textwidth]{burnupi-freq-offset.png}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  \caption{~Histogram of NTP's frequency offset for Mira machines in the Ceph test cluster.}
-  \label{fig:mira-hist}
-  \includegraphics[width=0.8\textwidth]{mira-freq-offset.png}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  \caption{~Histogram of NTP's frequency offset for Plana machines in the Ceph test cluster.}
-  \label{fig:plana-hist}
-  \includegraphics[width=0.8\textwidth]{plana-freq-offset.png}
-\end{figure}
-
-
-
+%TODO: I think I would put the statistics in the captions
 
 
 
@@ -296,15 +295,15 @@ shaping parameter approximates a normal distribution.
   \includegraphics[width=0.8\linewidth]{max_error-latency_mean-latency_alpha.png}
 \end{figure}
 
-The NTP Max Error term is strongly affected by the mean network
-latency. There is a much weaker effect on the Max Error by the shape
+The uncertainty, which NTP refers to as max error, 
+is strongly affected by the mean network
+latency. There is a much weaker effect on the uncertainty by the shape
 of the distribution of network latency traffic. NTP cares very little
 about how the network tragic is distributed as long as the mean is
-low. We can see in the upper right of MaxError vs Latency Mean vs
-Alpha that there is a slight increase in Max Error for more
+low. We can see in the upper right of figure~\ref{fig:max-uncertainty_latency-mean_latency-alpha} that there is a slight increase in uncertainty for more
 distributed latencies, especially as the mean latency grows.
 
-Interestingly, we see that the mean of the max error term increases
+Interestingly, we see that the mean of the uncertainty term increases
 with increasing alpha. This is likely because as alpha increases the
 data become more normal. When the network latency distribution has a
 long tail, most of our values will be less than or below the mean
@@ -320,9 +319,9 @@ figure~\ref{fig:mean-uncertainty_latency-mean_drift-variance} there is very litt
 effect of the drift variance of a node's internal clock on the max
 error term. This is expected: network latency is a much larger term in
 comparison to even the worst clocks. We again do see a strong,
-apparently linear, correlation between mean latency and the max error
-term. Looking at the mean of the max error term, we see values of
-between 15 and 45 ms approximately. The max of the max error term for
+apparently linear, correlation between mean latency and the uncertainty
+term. Looking at the mean of the uncertainty term, we see values of
+between 15 and 45 ms approximately. The max of the uncertainty term for
 any given run appears to be fairly predictable with few outliers in
 the 20 to 70 ms range. 
 
