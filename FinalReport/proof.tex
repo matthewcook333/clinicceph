@@ -64,22 +64,25 @@ There are several performance characteristics that need to be
 considered to preserve Ceph's performance while implementing a
 snapshotting algorithm. First, we need to consider the impact of
 delaying writes for a freeze. Since each node freezes for twice the
-uncertainty that is determined by the time protocol, the magnitude of
-the uncertainty is dependent on which time synchronization protocol is
-used. We analyze the uncertainty that NTP provides later in this
-document and discuss what impact the proposed algorithm would have on a Ceph
+uncertainty bounds that is determined by the time protocol, the magnitude of
+the uncertainty bounds is dependent on which time synchronization protocol is
+used. In Section \ref{sec:results}, We analyze the uncertainty that NTP
+provides and discuss what impact the proposed algorithm would have on a Ceph
 cluster if NTP is used as the time synchronization protocol. However,
 as long as a time synchronization protocol could provide uncertainties
 in the 10-20 millisecond range, yielding 20-40 millisecond freeze %% TODO this is inaccurate but idk what we want to do about it
-windows, our algorithm shouldn't impact the cluster's performance
-more than is acceptable. Also, freeze windows of each of the nodes are offset
-from each other, which means that the whole Ceph cluster is frozen
-for a much shorter period of time.
+windows, our algorithm should not impact the cluster's performance in
+a way noticeable to client applications. 
+Also, freeze windows of each of the nodes are offset
+from each other as they freeze for their own individual uncertainty bounds, 
+which means that the point in time where the whole Ceph cluster is frozen
+is much shorter.
 
-Next, we consider the impact of network link quality on this algorithm. We
+In this section, we consider the impact of network link quality on 
+this algorithm. We
 need to be assured that our algorithm does not require significant
 amounts of bandwidth which would cause network congestion within a
-Ceph cluster. Since most Ceph cluster are already running a time
+Ceph cluster. Since most Ceph clusters are already running a time
 synchronization protocol like NTP, our algorithm does not require any
 extra messages during the synchronization phase. The freeze phase also
 does not require any extra messages. The number of success/failure
@@ -105,14 +108,15 @@ from the local cluster to the remote cluster, which should be large
 and not a concern if we prioritize normal client traffic over the
 inter-cluster traffic.
 
-If the user wants to store the uncertainty information of the nodes in
-the monitors, the monitor nodes will have to store the uncertainty of
-each node in the local cluster. Though there could be tens of
+If we want to store the uncertainty information of the nodes in
+the Ceph cluster, the cluster will have to store the uncertainty values
+for each node. Though there could be tens of
 thousands of storage nodes, storing even eight bytes of time
 information would only be a few kilobytes of data. Even if it
 took a megabyte to store all of the timestamps, it would not be a
-significant memory burden. Also, reporting clock information to the
-monitors would require a constant number of messages for each node
+significant memory burden. Also, reporting clock information to some
+central nodes storing this information
+would require a constant number of messages for each node
 and, therefore, only a linear number of messages in the number of
 nodes in the cluster.  Based on our analysis, our algorithm should not
 degrade the performance of a Ceph cluster.
