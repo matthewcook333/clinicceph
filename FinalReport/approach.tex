@@ -1,16 +1,33 @@
 \chapter{Approach}
 \label{sec:approach}
 
-All time synchronization algorithms have some inherent error, because
-it is not possible to perfectly match time across a network. Some
-algorithms are able to provide an uncertainty that upper-bounds that
-error. The most common NTP implementation, ntpd, supports precisely
-this. Specifically, it uses packet round trip time between clients and
-the NTP server to provide an upper bound on error. It performs very
-well with good clocks and network links, but degrades gracefully when
-those are absent (see Chapter~\ref{sec:results} for a detailed
-investigation of this point). This snapshot algorithm relies on having
-a time synchronization algorithm capable of providing upper bounds.
+As 
+
+\section{Overlapping Freeze Windows}
+
+The freeze windows for our algorithm are designed to ensure
+that there is some point in time at which all nodes in the cluster are
+frozen. Each node knows the intended freeze time. However, since their
+clocks are not perfect, they cannot know exactly when they have reached it.
+
+Recall that our algorithm calls for each node to start its freeze
+window when its clock reads $T - U_i$, and completes it when its clock
+reads $T + U_i$, where $T$ is the freeze time and $U_i$ is the time
+synchronization method's (e.g. NTP) uncertainty at that time.  Since
+our chosen time synchronization method guarantees that the real time
+$T$ will be within the uncertainty bounds of when the node's clock
+reads $T$, we can be sure that each node will be frozen when the NTP
+server's clock shows the scheduled snapshot time. Therefore, we can be
+certain that their freeze windows overlap.
+Figure~\ref{fig:overlapping-windows} demonstrates this concept with
+four freeze windows overlapping at the freeze time of 8pm.
+
+\begin{figure}[h]
+  \centering
+  \caption{ Each box is the freeze window of a given node. The x axis is progression of “real” time. Note that they all overlap with “true” 8PM.}
+  \label{fig:overlapping-windows}
+  \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
+\end{figure}
 
 
 \section{Phases}
@@ -80,30 +97,4 @@ freeze period, as shown in figure~\ref{fig:safety-buff}.
 \includegraphics[width=0.8\textwidth]{safety-diagram.png}
 \caption{~The gap between the edge of the freeze window and the point at which the NTP server believes the snapshot is scheduled is called the safety buffer}
 \label{fig:safety-buff}
-\end{figure}
-
-\section{Overlapping freeze windows}
-
-The freeze windows for our algorithm are designed to ensure
-that there is some point in time at which all nodes in the cluster are
-frozen. Each node knows the intended freeze time. However, since their
-clocks are not perfect, they cannot know exactly when they have reached it.
-
-Recall that our algorithm calls for each node to start its freeze
-window when its clock reads $T - U_i$, and completes it when its clock
-reads $T + U_i$, where $T$ is the freeze time and $U_i$ is the time
-synchronization method's (e.g. NTP) uncertainty at that time.  Since
-our chosen time synchronization method guarantees that the real time
-$T$ will be within the uncertainty bounds of when the node's clock
-reads $T$, we can be sure that each node will be frozen when the NTP
-server's clock shows the scheduled snapshot time. Therefore, we can be
-certain that their freeze windows overlap.
-Figure~\ref{fig:overlapping-windows} demonstrates this concept with
-four freeze windows overlapping at the freeze time of 8pm.
-
-\begin{figure}[h]
-  \centering
-  \caption{ Each box is the freeze window of a given node. The x axis is progression of “real” time. Note that they all overlap with “true” 8PM.}
-  \label{fig:overlapping-windows}
-  \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
 \end{figure}
