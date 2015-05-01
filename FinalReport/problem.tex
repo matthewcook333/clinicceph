@@ -102,7 +102,7 @@ We could also try to achieve ordering through timestamps. In theory,
 this would be able to provide a total ordering of events. However, clocks are not perfect. Over time, clocks drift and become more desynchronized from each other. Ceph's distributed design means that each clock uses its own clock
 when determining the timestamp of an event. Using the timestamps by themselves
 will not allow us to get a total ordering of the events, since the clocks
-would slowly become more and more desynchronized, until the clocks are not 
+would slowly become more and more desynchronized, until the clocks are no 
 longer reliable ways to distinguish when events occured on different nodes. An 
 event could receive a later timestamp than an event it caused, which could 
 create an inconsistent snapshot of our system. 
@@ -111,7 +111,7 @@ Time synchronization protocols like the Network Time Protocol (NTP) could help
 keep the clocks in our system from desynchronizing too greatly. However, no
 time synchronization protocol we've been able to find can maintain 
 clock synchronization well enough that would allow us to use timestamps alone
-to order events consistently. However, we will see in Chapter~\ref{sec:approach} that other apsects of time synchronization protocols will prove useful
+to order events consistently. However, we will see in Chapter~\ref{sec:approach} that other aspects of time synchronization protocols will prove useful
 for our problem.
 
 Another naive approach is to propagate a write freeze throughout the cluster. 
