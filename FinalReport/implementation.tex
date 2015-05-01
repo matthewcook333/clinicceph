@@ -26,15 +26,3 @@ was used for our analysis because it is widely deployed, it can bound
 its own uncertainty, and the reference implementation of the protocol
 provides easy access to important diagnostic information. However, if a better time synchronization protocol with tighter uncertainty bounds could be found, it should be used to achieve shorter freeze windows. The Precision Time Protocol and Chrony (another NTP implementation), are possible candidates for investigation, though they may need modification to extract the necessary information.
 
-\section{Snapshot Validation}
-
-As in all systems, hardware failures are possible. As a result, we
-must consider how to mitigate against a network disruption or clock
-hardware failure leading to a significant clock desynchronization of
-an individual or group of nodes. This would be detectable via a major
-change in NTP's estimate of the clock's offset from the real time.
-The node would report this event to a central node and that central node would then be able to check that all of the replicas of the data in the failed node were safe. As shown in the
-proof of correctness section, all correctly-behaving nodes have an
-overlapping good time, so if at least one replica of the data in the failed node behaved
-correctly, then the snapshot is still safe.
-
