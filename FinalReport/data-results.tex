@@ -53,7 +53,7 @@ mean for every million clock ticks of the NTP server, the local
 computer could be off by 10 ticks. The network latency is a measure of
 the round trip time of the message passed between a local machine in
 the Ceph cluster to the NTP server and back. The round trip time
-is typically on the order of milliseconds~\cite{Sage}.
+is typically on the order of milliseconds~\citep{Sage}.
 
 
 The histogram in Figure~\ref{fig:latency-hist} shows the logged
@@ -80,7 +80,7 @@ The average frequency offset for individual Burnupi machines is -5.216 PPM with
 average standard deviation 1.079 PPM, Mira nodes with 10.752 PPM with average
 standard deviation 0.356, and Plana nodes with 13.341 PPM with average standard deviation 1.690. The average standard deviation across all nodes is
 1.033 PPM. It is interesting to note that the Burnupi machines with 
-the AMD chips primarily negative clock frequency offset, while the 
+the AMD chips have primarily negative clock frequency offset, while the 
 Mira and Plana machines with Intel chips have primarily positive 
 clock frequency offsets.
 
@@ -125,8 +125,8 @@ of a synchronization and the quality of the clocks involved.
 
 We have chosen to use an environment called \textit{clknetsim} %% TODO reference to clknetsim repo?
 to conduct our simulations. \textit{Clknetsim} is an open-source simulation 
-package developed and used by a major contributor to the \textit{Chrony}
-project <TODO citation> and the \textit{linuxptp} project <TODO citation> 
+package developed and used by a major contributor to the \textit{chrony}
+project~\citep{chrony} and the \textit{linuxptp} project~\citep{linuxptp}
 to test these protocol implementations. In
 comparison to commercial network simulation products, it provides a 
 simple codebase and feature set targeted at measuring 
