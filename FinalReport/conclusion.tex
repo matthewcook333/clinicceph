@@ -1,21 +1,23 @@
 \chapter{Conclusion}
 \label{sec:conclusion}
 
-Through our research, analysis, and testing, we have found what we
-consider to be a satisfactory solution. As shown through our proof of
-correctness and testing, the algorithm allows for taking a consistent,
-point-in-time snapshot as desired from our problem statement. Even in
-the presence of out-of-band communication, the algorithm provides
-consistency among all of the files even without external dependency
-information. Our algorithm is at the level of each individual node,
+The goal of our project was to design a snapshotting system for Ceph 
+that allows for asynchronous replication of data to remote data centers.
+We developed an algorithm that allows for taking these consistent, 
+point-in-time snapshots by synchronizing clocks within a Ceph cluster
+and performing short write holds for a length of time directly 
+proportional to the uncertainty of the clock synchronization accuracy.
+Even in the presence of out-of-band communication, the algorithm provides
+consistency among all of the events even without external dependency
+information. Our algorithm runs at the level of each individual node,
 which means that a Ceph data center with this algorithm remains highly
 scalable without increasing impact on the system. Also, with
 reasonable guarantees on the uncertainty bounds provided by NTP, the
 freeze windows, and as a result the snapshot, should have negligible
 impact on a Ceph user. The algorithm is also robust to node failures
-since as long as one node in each PG remains up, the snapshot can be
-taken and the algorithm can succeed. We have found the NTP to be
+since as long as one replica of each node remains up, the snapshot can be
+taken and the algorithm can succeed. We have found NTP to be
 satisfactory for the usage in our algorithm in fulfilling the problem
-constraints, though we have also outlined alternatives and possible
+constraints. We have also outlined alternatives and possible
 future work for using and testing other time synchronization
 protocols.

@@ -1,4 +1,4 @@
-\chapter{Implementation}
+\chapter{Implementation Details}
 \label{sec:impl}
 
 Our project is to develop an algorithm that would be implemented by a future
@@ -21,20 +21,8 @@ short suspension of snapshotting until all clocks in the data center re-calculat
 The quality of the master NTP clock significantly impacts the size of NTP's
 uncertainty bounds. We suggest that a very accurate clock, like a GPS or atomic clock, be added to the Ceph cluster. This recommendation comes from how NTP synchronizes clocks in a network. NTP has a hierarchy of clocks, where clocks in lower strata in the hierarchy synchronize themselves with clocks that are in the strata above them. Clocks that are higher in the hierarchy are generally more accurate than clocks lower in the hierarchy. At the top of the hierarchy are stratum 0 clocks, which are very accurate and are used as the reference for real time. By including a very accurate clock in the cluster, like a GPS or atomic clock, the master clock in the NTP server can synchronize with that clock, allowing it to move up to stratum 1. NTP can then eliminate upstream variation when calculating the uncertainty, which reduces the uncertainty bounds it creates. Without a stratum 0 device directly connected to the NTP stratum 1 server, NTP is forced to assume to worst possible clock properties for the on-board RTC. While this recommendation is not strictly necessary, a stratum 1 clock will provide shorter freeze windows in our algorithm.
 
-NTP functions well as a time synchronization protocol for our protocol. However, another time synchronization protocol, more tailored to data center precision, could provide tighter uncertainty bounds than NTP. NTP
+NTP functions well as a time synchronization protocol for our algorithm. 
+However, another time synchronization protocol, more tailored to data center precision, could provide tighter uncertainty bounds than NTP. NTP
 was used for our analysis because it is widely deployed, it can bound
 its own uncertainty, and the reference implementation of the protocol
 provides easy access to important diagnostic information. However, if a better time synchronization protocol with tighter uncertainty bounds could be found, it should be used to achieve shorter freeze windows. The Precision Time Protocol and Chrony (another NTP implementation), are possible candidates for investigation, though they may need modification to extract the necessary information.
-
-\section{Snapshot Validation}
-
-As in all systems, hardware failures are possible. As a result, we
-must consider how to mitigate against a network disruption or clock
-hardware failure leading to a significant clock desynchronization of
-an individual or group of nodes. This would be detectable via a major
-change in NTP's estimate of the clock's offset from the real time.
-The node would report this event to a central node and that central node would then be able to check that all of the replicas of the data in the failed node were safe. As shown in the
-proof of correctness section, all correctly-behaving nodes have an
-overlapping good time, so if at least one replica of the data in the failed node behaved
-correctly, then the snapshot is still safe.
-
