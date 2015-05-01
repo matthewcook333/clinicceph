@@ -7,13 +7,34 @@
     common task. A Ceph cluster is a single deployment of the Ceph
     file system across a group of computers. 
     
-  \item Node: A single computer in a cluster.
-
-  \item Snapshot: A consistent recording of the entire state of a Ceph cluster. 
-  This includes the state of files and objects stored within the cluster.
+  \item Clock Drift: The natural drift over time that a computer
+    clock experiences.
+    
+  \item Clock Wander: The rate of clock drift.
 
   \item Consistency: The partial ordering of events to preserve the
     causal relationships between them.
+    
+  \item Node: A single computer in a cluster.
+  
+  \item Node Failure: When a node in the cluster
+    becomes unavailable, either temporarily or permanently.
+      
+  \item Node Freeze: A hold on processing all writes that are sent to
+    that node. Reads may continue to be processed.
+    
+  \item Node Time: The time that the clock on a particular node reads;
+    it is not guaranteed to be the same as real time, although we hope it is
+    close.
+    
+  \item Out-of-Band Communication: Communication between users of a
+    Ceph cluster that Ceph has no way of detecting or recording.
+    
+  \item Real Time: The true, global time of the cluster. This can be considered
+  the time advertised by a standards organization or a perfect clock.
+
+  \item Snapshot: A consistent recording of the entire state of a Ceph cluster. 
+  This includes the state of files and objects stored within the cluster.
     
   \item Strong Consistency: Ceph is strongly consistent. It requires 
   that ordering of events be maintained even in the face of out-of-band
@@ -21,47 +42,36 @@
   be returned correctly when asked for or be unavailable. It does not 
   allow data to be returned corrupt.
 
-  \item Node Freeze: A hold on processing all writes that are sent to
-    that node. Reads may continue to be processed.
-
-  \item Clock Drift: The natural drift over time that a computer
-    clock experiences.
-
   \item Time Synchronization Protocol: A protocol that the nodes in
     a cluster implement to synchronize their clocks as they drift.
 
-  \item Real Time: The true, global time of the cluster. This can be considered
-  the time advertised by a standards organization or a perfect clock.
 
-  \item Node Time: The time that the clock on a particular node reads;
-    it is not guaranteed to be the same as real time, although we hope it is
-    close.
-
-  \item Out-of-Band Communication: Communication between users of a
-    Ceph cluster that Ceph has no way of detecting or recording.
-
-  \item Node Failure: When a node in the cluster
-    becomes unavailable, either temporarily or permanently.
+  
 \end{itemize}
 
 \section{Ceph specific terms}
 
 \begin{itemize}
-  \item Reliable Autonomic Distributed Object Store (RADOS): The core services and software backing the Ceph file system.
-  
+
+  \item Heartbeat: A message sent between nodes for the purpose of checking that the recipient is
+  	still alive. If a node does not respond to a set number of heartbeats, that node is marked as 
+  	failed and a new map is generated.
+
+  \item Map: A data structure that associates file hashes with clients. With the current map, a 
+  	client may communicate directly with the Ceph node most relevant to a given transaction. A new
+  	map is generated, and lazily propagated to nodes and clients, each time the availability of 
+  	nodes changes.
+  	
   \item Object Storage Device (OSD): A single storage unit. Functionally equivalent to a single computer or node.
 
   \item Placement Group (PG): Objects stored in a Ceph cluster are aggregated into
    Placement Groups by a distributed hash function. Each Object Storage Device
    contains a large number of Placement Groups.
    
-  \item Map: A data structure that associates file hashes with clients. With the current map, a 
-  	client may communicate directly with the Ceph node most relevant to a given transaction. A new
-  	map is generated, and lazily propagated to nodes and clients, each time the availability of 
-  	nodes changes.
+  \item Reliable Autonomic Distributed Object Store (RADOS): The core services and software backing the Ceph file system.
+   
+
   	
-  \item Heartbeat: A message sent between nodes for the purpose of checking that the recipient is
-  	still alive. If a node does not respond to a set number of heartbeats, that node is marked as 
-  	failed and a new map is generated.
+
 
 \end{itemize}
