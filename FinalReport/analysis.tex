@@ -28,7 +28,7 @@ outside of its uncertainty range, meaning that NTP doesn't function as
 we would expect.
 
 \begin{figure}[h]
-  \caption{The safety buffer tells us where NTP's error in what the real time is lies within its uncertainty range.} 
+  \caption{~The safety buffer tells us where NTP's error in what the real time is lies within its uncertainty range.} 
   \label{fig:safety-diag}
   \centering
   \includegraphics[width=0.8\textwidth]{safety-diagram.png}
@@ -44,7 +44,7 @@ standard deviation and the average value minus one standard
 deviation. Those values are shown in figure~\ref{fig:safety-data}
 
 \begin{figure}[h]
-  \caption{We computed the minimum and maximum, average, and average $\pm$ one standard deviation values of the aggregated data of the safety buffer. The positive values indicate that NTP is always accurately placing its estimate for the real time within its uncertainty interval.}
+  \caption{~We computed the minimum and maximum, average, and average $\pm$ one standard deviation values of the aggregated data of the safety buffer. The positive values indicate that NTP is always accurately placing its estimate for the real time within its uncertainty interval.}
   \label{fig:safety-data}
   \centering
   \includegraphics[width=0.6\textwidth]{5pointsSafety.png}
@@ -87,7 +87,7 @@ shaping parameter approximates a normal distribution.
 %% TODO: once we finalize the graphs, we should add some commentary about 
 %%       the values we're seeing actually mean.
 \begin{figure}[h]
-  \caption{NTP's mean uncertainty is plotted vs. the network latency mean and the network latency alpha parameter. We can see that the latency mean has a significant impact on the uncertainty, whereas the alpha parameter only impacts the uncertainty for large latency mean values.}
+  \caption{~NTP's mean uncertainty is plotted vs. the network latency mean and the network latency alpha parameter. We can see that the latency mean has a significant impact on the uncertainty, whereas the alpha parameter only impacts the uncertainty for large latency mean values.}
   \label{fig:mean-uncertainty_latency-mean_latency-alpha}
   \includegraphics[width=0.8\linewidth]{mean_max_error-mean_latency-latency_alpha.png}
 \end{figure}
@@ -101,7 +101,7 @@ shaping parameter approximates a normal distribution.
 %%       the values we're seeing actually mean.
 
 \begin{figure}[h]
-  \caption{NTP's max uncertainty is plotted vs. the network latency mean and the network latency alpha parameter.}
+  \caption{~NTP's max uncertainty is plotted vs. the network latency mean and the network latency alpha parameter.}
   \label{fig:max-uncertainty_latency-mean_latency-alpha}
   \includegraphics[width=0.8\linewidth]{max_error-latency_mean-latency_alpha.png}
 \end{figure}
@@ -137,13 +137,13 @@ any given run appears to be fairly predictable with few outliers in
 the 20 to 70 ms range. 
 
 \begin{figure}[t]
-  \caption{NTP's mean uncertainty is plotted vs. the network latency mean and the clock's drift variance. We can see that, compared to the latency mean, the clock drift variance has very little impact on the uncertainty.}
+  \caption{~NTP's mean uncertainty is plotted vs. the network latency mean and the clock's drift variance. We can see that, compared to the latency mean, the clock drift variance has very little impact on the uncertainty.}
   \label{fig:max-uncertainty_latency-mean_drift-variance}
   \includegraphics[width=0.8\linewidth]{max_max_err-mean_latency-drift_variance.png}
 \end{figure}
 
 \begin{figure}[h]
-  \caption{NTP's max uncertainty is plotted vs. the network latency mean and the clock's drift variance.}
+  \caption{~NTP's max uncertainty is plotted vs. the network latency mean and the clock's drift variance.}
   \label{fig:mean-uncertainty_latency-mean_drift-variance}
   \includegraphics[width=0.8\linewidth]{mean_max_err-mean_latency-drift_variance.png}
 \end{figure}

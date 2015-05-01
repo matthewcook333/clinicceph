@@ -37,8 +37,8 @@ behavior of a live Ceph cluster.
 
 To test on a live Ceph cluster, we need to log data on 
 instances of NTP running on the cluster. The implementation for NTP 
-used on the Ceph cluster is called \texttt{ntpd}. \texttt{ntpd} is a
-daemon that synchronizes the clocks on each machine using NTP and
+used on the Ceph cluster is called \texttt{ntpd}. The daemon \texttt{ntpd} 
+synchronizes the clocks on each machine using the NTP protocol and
 provides diagnostic data on the machines' clocks and network 
 communications. The two parameters of interest are frequency offset and
 network latency. The \texttt{ntpd} daemons were running on a Ceph
@@ -55,7 +55,7 @@ the round trip time of the message passed between a local machine in
 the Ceph cluster to the NTP server and back. The round trip time
 is typically on the order of milliseconds~\citep{Sage}.
 
-
+%TODO: Do we need 4 sig figs here? I doubt we can claim more than one or two...
 The histogram in Figure~\ref{fig:latency-hist} shows the logged
 values of network latency in the cluster. The mean is 2.668 ms, the 
 standard deviation is 10.304 ms, and the median is 0.643 ms. The 
@@ -116,6 +116,7 @@ based. By having a single clock, we are able to quantify and verify
 the claims that time synchronization algorithms make about the quality
 of a synchronization and the quality of the clocks involved.
 
+%TODO:
 % NOTE: I'm not sure this paragraph is needed?
 % By using a simulation that abstracts the clock from a physical clock,
 % we also eliminate any potential for idiosyncrasies of the host system
@@ -123,25 +124,26 @@ of a synchronization and the quality of the clocks involved.
 % the added benefit of allowing the simulation to run at a speed much
 % greater than real time.
 
-We have chosen to use an environment called \texttt{clknetsim} %% TODO reference to clknetsim repo?
-to conduct our simulations. \texttt{Clknetsim} is an open-source simulation 
-package developed and used by a major contributor to the \texttt{chrony}
+We have chosen to use an environment called \texttt{clknetsim} %TODO reference to clknetsim repo?
+to conduct our simulations. The open-source simulation package 
+\texttt{clknetsim} is 
+developed and used by a major contributor to the \texttt{chrony}
 project~\citep{chrony} and the \texttt{linuxptp} project~\citep{linuxptp}
 to test these protocol implementations. In
 comparison to commercial network simulation products, it provides a 
 simple codebase and feature set targeted at measuring 
 time across a simulated network. We have made slight additions to and
-modifications of the clknetsim package. These extensions were made in 
+modifications of the \texttt{clknetsim} package. These extensions were made in 
 order to expose state parameters of NTP that were not being exposed, 
 including the maximum error term.
 
-Clknetsim makes use of the environment variable \texttt{LD\_PRELOAD} in
+The package \texttt{clknetsim} makes use of the environment variable \texttt{LD\_PRELOAD} in
 the Linux library to intercept system calls that time sychronization 
 libraries make on their hosts. Using these intercepted calls, 
-clknetsim is able to monitor and capture the internal state of
+\texttt{clknetsim} is able to monitor and capture the internal state of
 the synchronization program. It is also able to fully control the
 information the host's time library receives from the network and the system
-clock. As clknetsim is manipulating system clocks and network
+clock. As \texttt{clknetsim} is manipulating system clocks and network
 connections for the simulation, it can shape the behavior of the clock
 and network parameters to test different setups and hardware properties. 
         
@@ -150,8 +152,8 @@ this system. We first want to determine if the maximum uncertainty
 reported by NTP is accurate. We can check that the maximum uncertainty
 report is accurate by ensuring that the uncertainty bounds on a given machine
 clock's time includes the real time.
-Clknetsim allows us to do this by, for a
-given timestamp in the simulation, allowing us to observe what NTP
+The \texttt{clknetsim} package, for a
+given timestamp in the simulation, allows us to observe what NTP
 thinks the time is along with information about how certain NTP is
 about that time. Our second goal is to analyze how low of an
 uncertainty can be reached. As our algorithm is predicated on a upper
