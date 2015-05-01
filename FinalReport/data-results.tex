@@ -36,24 +36,24 @@ The second section consists of the results and analyses from the simulations,
 including the correctness of the NTP uncertainty bounds and the implied
 performance from the size of the freeze windows. 
 
-
-%TODO: ADD RESULTS?
+We find that NTP and \texttt{ntpd} are a capable algorithm and implementation.
+The \texttt{ntpd} program will provide correct values under any reasonable 
+network configuration. However, a low-latency network will ensure best 
+performance. In ultra low-latency environments, an alternative protocol 
+should be explored. NTP's robust specification, and assumptions of maximum possible
+error, result in a minimum uncertainty on the order of a millisecond. 
+It is advisable to have a top-level clock (such as a GPS clock)
+co-located with the cluster being synchronized. This minimizes error do to
+multiple levels of synchronization and allows NTP to make stronger assumptions
+about the accuracy of the root clock. 
 
 
 
 \section{Collection of NTP Performance in a Real-World Setting}
 
-There are two primary characteristics of our algorithm that need
-testing: the existence of the freeze period overlaps, and the 
-worst and average case duration of these freeze periods. 
-The existence of the freeze period overlaps can be tested by 
-ensuring that all of the NTP uncertainty bounds overlap at some 
-point in time. Since individual nodes cannot know the real time
-(if it did, we would be done as there would be no need for clock uncertainty
-bounds), we must use simulations to observe the existence of 
-the overlap of freeze windows. In order to accurately simulate the
-characteristics of a real Ceph cluster, we need to model the
-behavior of a live Ceph cluster.
+In order to accurately simulate the
+characteristics of a real Ceph cluster to test \texttt{ntpd}, we need to model the
+behavior of a real Ceph cluster.
 
 To test on a live Ceph cluster, we need to log data on 
 instances of NTP running on the cluster. The implementation for NTP 
@@ -251,12 +251,12 @@ does seem to function as expected under the simulation conditions we observed.
 Our testing has shown that NTP is a capable and resilient
 algorithm. It seems likely that in any real-world network
 configuration (baring hardware failure) NTP will be able to report
-accuracy statistics that will result in the correct performance of our
+uncertainty statistics that will result in the correct performance of our
 algorithm. However, more exacting network layouts will be necessary to
 make our algorithm performant. The data displayed in this section
 summarizes trends seen when varying a number of parameters in a
-standard network setup. What we found was mostly unsurprising --
-network latency is the standout determining factor for how performant
+standard network setup. What we found was mostly unsurprising -- network 
+latency is the standout determining factor for how performant
 our algorithm will be. Lower the mean network latency and you will be
 rewarded by a fairly consistently linear drop in freeze times.
 
