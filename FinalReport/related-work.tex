@@ -49,53 +49,29 @@ and events could be incorrectly ordered~\citep{Fidge1988}.
 
 \section{Network Time Synchronization}
 
-We could also try to achieve ordering through timestamps. In theory,
+As mentioned in Chapter \ref{sec:description}, total ordering can be
+achieved through timestamps. In theory,
 this would be able to provide a total ordering of events including
-of any out-of-band communication. Clock drift and skew complicate this
-approach: When multiple time sources are in use in a distributed system,
-the clocks must be synchronized to a high degree of accuracy in order
-to use timestamps to order events across nodes. In a real distributed
-system, generally each machine is just using its own RTC
-circuit. These are reasonably good for ordinary use, but do not have
-the precise reliability we need. %% TODO? cite intel spec sheet
-
-A naive approach to a distributed snapshot algorithm uses timestamps
-alone to establish a total ordering of events in a system. This works
-well in systems with centralized controllers or logs that have
-knowledge of all events. In a system with highly distributed control
-like Ceph, each node only sees a small fraction of events. Each node
-contains its own clock, and these clocks tend to drift perceptibly
-over time. Clocks across a distributed system become skewed as they
-drift out of sync. They must be synchronized regularly to combat this
-effect.
-
-Consider a cluster containing multiple nodes. Within this cluster,
-consider event $i$ and event $j$ such that $j$ depends on $i$. Without
-some method of ensuring bounded clock drifts, it is impossible to
-guarantee that a given timestamp at a specific node is correct with
-reference to the entire system. One node (with a slightly fast clock)
-may claim that event $i$ occurred at a point in time later than the
-event happened as seen by some ``objective'' observer. Event $j$,
-processed by a node with a slightly slow clock, could then ``occur''
-(be timestamped) before event $i$. A snapshot algorithm might now
-believe it is acceptable to include event $j$ and not event $i$. Such
-a snapshot would be inconsistent.
+any out-of-band communication. Clock drift and skew complicate this
+approach: When multiple clocks are in use in a distributed system,
+the clocks must be synchronized in order
+to use timestamps to order events across nodes. 
 
 A synchronization algorithm could be effective should it provide
 sufficiently tight, provable bounds on the drift of a given clock and
-on the skew across the distributed system. These bounds would allow
-the file system to gain a clear understanding of what knowledge of
-event ordering it has when taking a snapshot.
+on the skew across the distributed system. These bounds provide a method
+to obtain a consistent snapshot as we described in our algorithm in 
+Chapter \ref{sec:approach}.
 
-Many clock synchronization algorithms already exist and are in wide
-use. However, these algorithms tend to have major shortcomings when
-they are considered for application to this problem in an
-arbitrary-scale data center. A synchronization method must have
-provable error bounds and reasonable communication complexity for
-timestamps alone to order events in a snapshot. We must also be able
-to prove the reliable correctness of the error bound calculations in
+Many clock synchronization algorithms already exist. However, 
+these algorithms tend to have major shortcomings when
+they are considered for application to this problem within a
+data center. A synchronization method must have bounds 
+on the clock error in order events in a snapshot, and these 
+error bounds must also be a hard upper bound in
 order for Ceph to make guarantees about the consistency of its
-snapshots.
+snapshots. The following subsections describe different time
+synchronization methods and protocols.
 
 \subsection{Network Time Protocol}
 
