@@ -29,7 +29,7 @@ Out-of-band communication is communication that is related to the data in the
 Ceph cluster, but that Ceph cannot detect. This contrasts with in-band
 communication, which the Ceph cluster can see and potentially account for. 
 
-\begin{figure}[h]
+\begin{figure}[!htbp]
   \centering
   \caption{~Two clients communicating with each other out-of-band.} 
   \label{fig:out-of-band}
@@ -73,7 +73,7 @@ snapshot could cause errors in applications that are using that inconsistent
 data. See Figure~\ref{fig:consistency} for examples of consistent and 
 inconsistent snapshots.
 
-\begin{figure}[h]
+\begin{figure}[!htbp]
   \centering
   \caption{~Event A caused event B. The dashed line in the center represents the time when the snapshot took place. The first three cases are examples of consistent snapshots. The last case is an inconsistent snapshot.} 
   \label{fig:consistency}
