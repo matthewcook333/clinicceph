@@ -45,6 +45,11 @@ second text file through the second client. Since these operations are handled
 by separate clients, Ceph cannot be certain of a causal relationship between 
 the two events. 
 
+In addition, Ceph is a very performant system. Currently, writes to a Ceph 
+cluster take 4 to 20 milliseconds to perform~\citep{Sage}. Any solution that 
+we provide must maintain Ceph's performance, which means that its read/write 
+capabilities cannot be interrupted for extended periods of time.
+
 Finally, Ceph allows a user to use any commodity hardware when constructing 
 their cluster. This gives users more versatility, but adds extra constraints 
 on our problem, since we cannot specify hardware that the user must purchase 
@@ -106,9 +111,22 @@ Time synchronization protocols like the Network Time Protocol (NTP) could help
 keep the clocks in our system from desynchronizing too greatly. However, no
 time synchronization protocol we've been able to find can maintain 
 clock synchronization well enough that would allow us to use timestamps alone
-to order events consistently. We will see in Chapter~\ref{sec:approach}, 
-however, that other apsects of time synchronization protocols will prove useful
+to order events consistently. However, we will see in Chapter~\ref{sec:approach} that other apsects of time synchronization protocols will prove useful
 for our problem.
+
+Another naive approach is to propagate a write freeze throughout the cluster. 
+When a specific node determines that it is time to take a snapshot, it holds 
+all incoming writes and messages its neighbors to do the same. This message 
+is then sent through the center as each node does the same. In the end, when 
+all nodes have frozen, the snapshot can be taken and the nodes begin to 
+unfreeze. 
+
+However, depending on the size of the cluster, it could take a long time for 
+that freeze to propagate through the cluster. If a client wanted to write to  
+the node that started the freeze, it could take tens of milliseconds to do so. 
+This would noticeably degrade Ceph's performance, which is not acceptable. 
+However, we will see in Chapter~\ref{sec:approach} that we can modify this 
+approach to remove the performance degradation.
 
 Finally, Google has implemented a library called TrueTime to provide ranges of 
 what real time could be in their Spanner database. While this solution may seem like
