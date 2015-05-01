@@ -2,14 +2,15 @@
 \label{sec:rel-work}
 
 Creating a consistent snapshot of a Ceph cluster is difficult because
-Ceph is inherently distributed. The system does not have a single or
+Ceph is distributed: The system does not have a single or
 small group of nodes that can track every transaction. Instead, the
-cluster must aggregate knowledge from thousands of nodes to capture a
-complete point-in-time snapshot of its data. Significant research
-efforts have been directed toward taking snapshots and synchronizing
-and ordering events in distributed systems. Unfortunately, none of the
-approaches we reviewed can address the particular needs of Ceph
-without modification.
+cluster must aggregate knowledge from potentially thousands of nodes 
+to capture a complete point-in-time snapshot of its data. 
+Significant research efforts have been directed toward 
+taking snapshots as well as synchronizing and ordering events 
+in distributed systems. Unfortunately, none of these
+approaches can address the particular constraints of Ceph outlined
+in Chapter \ref{sec:description} without modification.
 
 \section{Logical Clocks}
 
@@ -18,31 +19,32 @@ of events in distributed systems. If an ordering of the events and
 messages between nodes in a distributed system can be established, and
 this ordering is complete enough to take into account all
 dependencies, a snapshot may be obtained by observing which events
-happen before other events. Lamport clocks try to order events and
+happen before other events. 
+
+Lamport clocks try to order events and
 messages by a logical timestamp, a counter that increments following
 each event or message pass, rather than by some physical time that
 could be affected by clock drift. This ordering method works well if
 the system can reason about events that are occurring between its own
 nodes. However, this type of partial ordering fails to guarantee
-correct ordering in the case of out-of-band communication; the system
+correct ordering in the case of out-of-band communication as described in Chapter \ref{sec:description}; the system
 cannot order the events that occur outside of the system as it has no
 knowledge of the order of those events. These clocks might still be
 useful for reasoning about interactions that occur strictly within the
 Ceph cluster, but they require a second system that supports
-out-of-band communication to meet our consistency
+out-of-band communication to meet Ceph's consistency
 guarantee~\citep{Lamport1978}.
 
 Vector clocks are very similar to Lamport clocks. Instead of
 maintaining a single logical time, each node stores a vector of
-times. Each element of the vector represents the last time known to
-have been seen on a given other node in the system. The ordering of
+times. Each element of the vector represents other nodes in the system.
+The value of each element is the time of the last event received
+by that given node in the system. The ordering of
 events is based on the relative times stored in the vectors. All
-messages contain the sending process's vector and a process
+messages contain the sending node's vector and a node
 updates its vectors when it receives a message. Vector clocks can be
 superior to Lamport clocks for some purposes because they do not assign
-an arbitrary time to events. Instead, they use the relative times of
-their processes to determine the partial order of the events. However,
-like Lamport clocks, out-of-band communication is not accounted for
+an arbitrary counter representing time to events. Instead, they use the relative times of to other nodes to determine the partial order of the events. However, like Lamport clocks, out-of-band communication is not accounted for
 and events could be incorrectly ordered~\citep{Fidge1988}.
 
 \section{Network Time Synchronization}
@@ -98,108 +100,110 @@ snapshots.
 \subsection{Network Time Protocol}
 
 NTP is a robust algorithm for time
-synchronization~\citep{Burbank2010}. Currently it is among the most
-widely-deployed time synchronization algorithms. NTP is designed to
-synchronize geographically separated computers over the internet. As a
+synchronization~\citep{Burbank2010}. NTP is designed to
+synchronize time geographically separated computers over the internet. As a
 result, it is resilient to node failure, network unreliability, and
 poor clock quality. NTP requires very little information about the
-network and nodes on which it is operating to provide useful
-synchronization. It uses a number of statistical estimators to predict
+network configuration and nodes on which it is operating to provide useful
+synchronization. NTP uses statistical estimators to predict
 future clock performance. Notably, NTP does define a maximum error
-term in relation to a single root time source. As a result, NTP is a
-potential choice for a time synchronization method in our algorithm.
+term in relation to a single root time source. Given this maximum error 
+term, NTP is a potential choice as a time synchronization method in 
+our algorithm.
 
 A better solution is possible, however. NTP's focus on robustness
 causes compromises for the freeze time. NTP consistently overestimates
-uncertainty (see figure~\ref{fig:safety-data} and
-chapter~\ref{sec:analysis} more generally for an in-depth examination of
-this issue). A protocol designed for local area network
+uncertainty (see Chapter~\ref{sec:results} for an in-depth 
+examination of this issue). A protocol designed for local area network
 synchronization could likely do away with some of the complexity of
 NTP, make more assumptions about network configuration, and as a
 result provide tighter bounds on its error.
 
-In chapters~\ref{sec:results} and~\ref{sec:analysis}, we analyze the
-performance of an NTP implementation, ntpd, across various clock and
-network conditions. The ntpd daemon was chosen for its common use and
-ease of access to relevant calculated parameters. Chrony is another
+In Chapter~\ref{sec:results}, we analyze the
+performance of an NTP implementation, \texttt{ntpd}, across various clock and
+network conditions. The \texttt{ntpd} daemon was chosen for its common use and
+ease of access to relevant calculated parameters. \texttt{Chrony} is another
 potential choice for an NTP implementation, although it lacks some
 diagnostic reporting. %% TODO these were flagged as needing citations
                       %% but I'm not convinced we really need them?
 
 \subsection{Precision Time Protocol}
 
-PTP is designed for tightly synchronizing computers on a local network
-~\citeyearpar{2008}. To gain even better synchronization, a user may use
-specific hardware that supports PTP. This hardware is generally
-included in current data center switches already. This hardware helps
-PTP decrease the amount of random variation in message latency in a
-network, enabling extremely accurate measurements of time. These
-measurements should in theory provide extremely tight uncertainty
+Precision Time Protocol (PTP) is designed for 
+tightly synchronizing computers on a local network
+~\citeyearpar{2008}. To gain even better 
+synchronization with tighter bounds on clock uncertainty than NTP, 
+a user may use specific hardware that supports PTP. Hardware that supports
+PTP is generally included in current data center switches already. The type
+of hardware that supports PTP helps decrease the amount of random variation in
+message latency in a network, enabling extremely accurate measurements of time.
+These measurements should in theory provide extremely tight uncertainty
 bounds. However, the protocol does not specify (and the implementation
 does not include) an upper bound error value. This means that this
 protocol is not currently suited for use with our algorithm.
 
-If performance of NTP is found to be unsatisfactory, it would be worth
-considering extending PTP (chapter~\ref{sec:impl} has a brief discussion
-of this). The implementation of a maximum error term would be
-sufficient for PTP to be supported. Linux PTP is an implementation of
-the Precision Time Protocol (PTP)~\citeyearpar{2008}. PTPd is another
-implementation~\citeyearpar{2008}.
+If performance of NTP is found to give unsatisfactory clock uncertainty bounds,
+it would be worth considering extending PTP to give an upper bound uncertainty
+value (Chapter~\ref{sec:impl} 
+has a brief discussion of this). The implementation of a maximum error term 
+would be sufficient for PTP to be used with our algorithm. 
+
+% NOTE: Don't think these are needed. Awkward to add implementation details 
+%     into related work
+%Linux PTP is an implementation of the Precision Time Protocol 
+%(PTP)~\citeyearpar{2008}. PTPd is another
+%implementation~\citeyearpar{2008}.
 
 \subsection{Wireless Synchronization}
 
 Surprisingly, wireless time synchronization is a much easier
-problem. Wireless signal propagation times are very easy to model and
-as a result time synchronization is easy to perform with a very high
+problem. Wireless signal propagation times are easy to model and
+as a result time synchronization is easy to perform with a high
 level of accuracy. Protocols such as PulseSync take advantage of this
-observation~\citep{Lenzen2010}.
+observation to achieve highly synchronized clocks~\citep{Lenzen2010}.
 
-If extremely small freeze windows are a requirement, a wireless
-synchronization protocol could easily be designed that would allow for
-a very high level of confidence. This would require significant
-specialized hardware, and one of the goals of this project is to
-provide a solution that can work on commodity hardware. 
+If highly synchronized clocks are a requirement, a wireless
+synchronization protocol could be designed that would allow for
+a high level of confidence on the clock uncertainty bounds. 
+This would require specialized hardware, and one of the goals of 
+this project is to provide a solution that can work on any commodity hardware. 
 
 GPS Synchronization is a special case of wireless synchronization that
 can provide a nearly perfect time source around the world. It is
 advisable to incorporate a GPS time source (or similarly accurate time
 source) into the master clock of any implementation of our
-algorithm. The details of this are also discussed in
-chapter~\ref{sec:impl}.
+algorithm in order to achieve tighter uncertainty bounds, 
+though adding this would require specialized hardware.
+The details of this are discussed in Chapter~\ref{sec:impl}.
 
 \section{TrueTime}
 
-Google has a number of very time-sensitive applications, most notably
+Google has a number of time-sensitive applications, such as
 the synchronously geo-replicated Spanner database. Synchronous
 geo-replication of database transactions requires very strong time
-guarantees because database transaction ordering is important. A
-library called TrueTime was developed to support these applications.
+guarantees because database transaction ordering is important for 
+reliability and security. 
 
-\subsection{TrueTime.now()}
+A library called TrueTime was developed to support these applications.
+TrueTime does not provide current time in the way that standard time
+libraries do, such as for NTP or PTP. Instead, the ``current time'' it gives is a range that is guaranteed to contain
+the real current time. The bounds are claimed to be generally less than 10
+milliseconds. This range in the real current time allows for rapid 
+throughput on the database while still maintaining definitive transaction ordering. When TrueTime's guaranteed bounds start to spread, 
+it will throttle writes to maintain that ordering~\citep{Corbett2012}.
 
-TrueTime does not provide current time in the way that most time
-libraries do. Instead, it gives a range that is guaranteed to contain
-the current time. The bounds are claimed to be generally less than 10
-milliseconds. This allows for very rapid throughput on the database
-while still maintaining definitive transaction ordering. When
-TrueTime's guaranteed bounds start to spread, it will throttle writes
-to maintain that ordering~\citep{Corbett2012}.
+TrueTime relies on having extremely accurate and precise clocks 
+to maintain sub-10ms skew between geographically diverse data centers. Specifically, Google has placed atomic and GPS clocks in their data 
+centers. TrueTime runs a daemon that talks to these clocks, both in its own data center and in others. TrueTime is able to weed out clocks whose 
+timing information is not reliable 
+(e.g. due to network latency)~\citep{Corbett2012}.
 
-\subsection{TrueTime's Clocks}
-
-TrueTime relies on having extremely good clocks to maintain sub-10ms
-skew between geographically diverse data centers. Specifically, Google
-has placed atomic and GPS clocks in their data centers. TrueTime runs
-a daemon that talks to these clocks, both in its own data center and
-in others. A variation on Marzullo's algorithm is used to weed out
-clocks whose timing information is not reliable (e.g. due to network
-latency)~\citep{Corbett2012}.
-
-\subsection{Applicability}
-
-As a concept, TrueTime is interesting. However, as it is a proprietary
-library and as it requires special hardware, it would not be able to
+TrueTime is a proprietary
+library that requires special hardware, thus it would not be able to
 be used directly as a solution to Ceph's asynchronous replication
-problem. However, if a similar open source protocol became available,
-it could merit deeper analysis. %% TODO This exists, we talked about
+problem. 
+
+%% NOTE: If we are going to talk about this, we need more information
+%% However, if a similar open source protocol became available,
+%% it could merit deeper analysis. %% TODO This exists, we talked about
                                 %% it, it's called Cockroach

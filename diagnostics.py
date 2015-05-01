@@ -16,11 +16,13 @@ fileName = ""
 
 # types of nodes on cluster data. Change to specify different types of nodes
 nodeNames = ["burnupi", "mira", "plana"]
-# max value. Any value above this will be removed. This is to remove faulty
+# max and min value. Any value above and below this will be removed. This is to remove faulty
 # incorrectly logged values
-maxValue = 900.0
+threshold = 900.0
 # range for histogram plot
-histogramRange = (0, 5)
+histogramRange = (-40, 40)
+# reasonable latency range
+#histogramRange = (0, 5)
 
 usage = 'usage: diagnostics.py -i <inputfile> [-f | -t]'
 
@@ -147,10 +149,10 @@ def main(argv):
       truetimes = []
       truevalues = []
       for time, value in itertools.izip(times,values):
-        if time < 0:
+        if time < 0 or time > 4929100000.0:
           # deleting incorrect or padded entry
           continue
-        elif value > maxValue or value < 0.0:
+        elif value > abs(threshold):
           # deleting bad values
           print "data spike: " + str(value) + " on node: " + node['node']
         else:
@@ -179,6 +181,7 @@ def main(argv):
     # name of scatterplot graph is here
     plt.savefig(graphType + "scatter" + str(i))
 
+  overallValues = []
   overallStdDevs = []
   # make next three histogram plots based on data on each cluster
   for i in range(len(nodeNames)):
@@ -189,12 +192,18 @@ def main(argv):
       continue
     flattened = []
     stdDevs = []
-    for (key, value) in dataSet[i].items():
-      (muNode, sigmaNode) = norm.fit(value)
+    for (key, values) in dataSet[i].items():
+      # if we have a node with empty data, skip
+      if len(values) == 0:
+        continue
+      (muNode, sigmaNode) = norm.fit(values)
+      if math.isnan(sigmaNode):
+        print values
       stdDevs.append(sigmaNode)
       # uncomment to print stats of each node
       #print "node: " + key + " has mean: " + str(muNode) + " and stdDev: " + str(sigmaNode)
-      flattened += value
+      flattened += values
+    overallValues += flattened
 
     # best fit of data
     (mu, sigma) = norm.fit(flattened)
@@ -206,13 +215,23 @@ def main(argv):
     axes = plt.gca()
     plt.xlabel(graphLabel)
     plt.ylabel('Packet Count')
-    plt.title("Histogram of %s" % (graphLabel))
+    plt.title("Histogram of %s across %d %s nodes" % (graphLabel, numNodes[i], nodeNames[i]))
     print "Histogram of %s for %s nodes: mu=%.3f, sigma=%.3f, median=%.3f" %(graphType, nodeNames[i], mu, sigma, median)
     # name of histogram graph is here
     plt.savefig(graphType + "histogram" + str(i))
 
   print "Overall Standard Dev across " + str(len(overallStdDevs)) + " nodes is " + str(sum(overallStdDevs)/float(len(overallStdDevs)))
-     
+  plt.figure((len(nodeNames)*2)+1)
+  plt.xlabel(graphLabel)
+  plt.ylabel('Packet Count')
+  entries, bin_edges, patches = plt.hist(overallValues, bins = 100, facecolor = 'green', range = histogramRange)
+  totalNumNodes = sum(numNodes)
+  (mu, sigma) = norm.fit(overallValues)
+  median = np.median(overallValues)
+  plt.title("Histogram of %s across %d nodes" % (graphLabel, totalNumNodes))
+  print "Histogram of %s across %d nodes: mu=%.3f, sigma=%.3f, median=%.3f" %(graphType, totalNumNodes, mu, sigma, median)
+  plt.savefig(graphType + "histogramtotal")
+
   plt.show()
   json_data.close()
 
