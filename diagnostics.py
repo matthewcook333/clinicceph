@@ -20,7 +20,9 @@ nodeNames = ["burnupi", "mira", "plana"]
 # incorrectly logged values
 threshold = 900.0
 # range for histogram plot
-histogramRange = (-40, 40)
+histogramRange = None
+# reasonable freqOffset range
+#histogramRange = (-40, 40)
 # reasonable latency range
 #histogramRange = (0, 5)
 
@@ -211,7 +213,10 @@ def main(argv):
     print nodeNames[i] + " average standard deviation: " + str(sum(stdDevs)/float(len(stdDevs)))
     overallStdDevs += stdDevs
 
-    entries, bin_edges, patches = plt.hist(flattened, bins = 100, facecolor = 'green', range = histogramRange)
+    if histogramRange != None:
+      entries, bin_edges, patches = plt.hist(flattened, bins = 100, facecolor = 'green', range = histogramRange)
+    else:
+      entries, bin_edges, patches = plt.hist(flattened, bins = 100, facecolor = 'green')
     axes = plt.gca()
     plt.xlabel(graphLabel)
     plt.ylabel('Packet Count')
@@ -224,7 +229,10 @@ def main(argv):
   plt.figure((len(nodeNames)*2)+1)
   plt.xlabel(graphLabel)
   plt.ylabel('Packet Count')
-  entries, bin_edges, patches = plt.hist(overallValues, bins = 100, facecolor = 'green', range = histogramRange)
+  if histogramRange != None:
+    entries, bin_edges, patches = plt.hist(overallValues, bins = 100, facecolor = 'green', range = histogramRange)
+  else:
+    entries, bin_edges, patches = plt.hist(flattened, bins = 100, facecolor = 'green')
   totalNumNodes = sum(numNodes)
   (mu, sigma) = norm.fit(overallValues)
   median = np.median(overallValues)
