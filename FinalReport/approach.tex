@@ -1,30 +1,32 @@
 \chapter{Approach}
 \label{sec:approach}
 
-Our algorithm uses the error bounds, or uncertainty, on clock error provided by time
-synchronization protocols like NTP to create freeze windows at each node. 
-The nature of these freeze windows are such that they all overlap at a 
-particular point in time, which ensures that the snapshots we take are 
-consistent. In this chapter, we discuss how we use those freeze windows to 
-take a consistent snapshot at a prescheduled time.
+Our algorithm uses the error bounds, or uncertainty, on clock error
+provided by time synchronization protocols like NTP to create freeze
+windows at each node.  The nature of these freeze windows are such
+that they all overlap at a particular point in time, which ensures
+that the snapshots we take are consistent. In this chapter, we discuss
+how we use those freeze windows to take a consistent snapshot at a
+prescheduled time.
 
 \section{Overlapping Freeze Windows}
 
-Each node knows the intended freeze time. However, since their
-clocks are not perfect, they cannot know exactly when they have reached it.
-The freeze windows for our algorithm are designed to ensure
-that all of the nodes in the cluster are frozen at the freeze time.
+Each node knows the intended freeze time. However, since their clocks
+are not perfect, they cannot know exactly when they have reached it.
+The freeze windows for our algorithm are designed to ensure that all
+of the nodes in the cluster are frozen at the freeze time.
 
 Let's define $T$ as the scheduled freeze time and $U_i$ as the time
-synchronization protocol's uncertainty of that node's clock error at that time.
-The time synchronization protocol guarantees that real time is always within 
-its uncertainty bound on the clock's time. This means we know that $T$ will 
-occur within $U_i$ of when the node's clock reads $T$. Therefore, if we freeze 
-from when the node's clock reads $T - U_i$ to when it reads $T + U_i$, we can 
-be sure that it will be frozen when the real time is $T$. 
-Figure~\ref{fig:safety-buff} shows the freeze time within a freeze window and 
-the ``safety buffer", which is the buffer between the freeze time and the 
-closest bound of the freeze window.
+synchronization protocol's uncertainty of that node's clock error at
+that time.  The time synchronization protocol guarantees that real
+time is always within its uncertainty bound on the clock's time. This
+means we know that $T$ will occur within $U_i$ of when the node's
+clock reads $T$. Therefore, if we freeze from when the node's clock
+reads $T - U_i$ to when it reads $T + U_i$, we can be sure that it
+will be frozen when the real time is $T$.
+Figure~\ref{fig:safety-buff} shows the freeze time within a freeze
+window and the ``safety buffer", which is the buffer between the
+freeze time and the closest bound of the freeze window.
 
 \begin{figure}
 \includegraphics[width=0.8\textwidth]{safety-diagram.png}
@@ -33,11 +35,11 @@ closest bound of the freeze window.
 \end{figure}
 
 
-This is true for 
-each node, so we can be sure that each node will be frozen at $T$ and, 
-therefore, we can be certain that their freeze windows overlap.
-Figure~\ref{fig:overlapping-windows} demonstrates this concept with
-four freeze windows overlapping at the freeze time of 8pm.
+This is true for each node, so we can be sure that each node will be
+frozen at $T$ and, therefore, we can be certain that their freeze
+windows overlap.  Figure~\ref{fig:overlapping-windows} demonstrates
+this concept with four freeze windows overlapping at the freeze time
+of 8pm.
 
 \begin{figure}[!htbp]
   \centering
@@ -54,19 +56,19 @@ Our algorithm has four phases:
 
 \item \emph{Synchronization}
 
-  During the synchronization phase, all nodes in the data center run a supported time
-  synchronization algorithm. All nodes synchronize their
-  internal clocks with a common master
+  During the synchronization phase, all nodes in the data center run a
+  supported time synchronization algorithm. All nodes synchronize
+  their internal clocks with a common master
   clock\footnotemark. Administrative messages are also exchanged
   during this phase. These messages include scheduling future snapshot
-  times. These messages could be incorporated into already existing messages
-  in Ceph.
+  times. These messages could be incorporated into already existing
+  messages in Ceph.
 
-  \footnotetext{In the case where NTP is used as the time synchronization
-    protocol, multiple NTP servers may also be used, but they must
-    all synchronize to the same root, or \textit{stratum 1}, NTP
-    server. Otherwise, the NTP uncertainties will not necessarily
-    provide overlapping freeze windows}
+  \footnotetext{In the case where NTP is used as the time
+    synchronization protocol, multiple NTP servers may also be used,
+    but they must all synchronize to the same root, or \textit{stratum
+      1}, NTP server. Otherwise, the NTP uncertainties will not
+    necessarily provide overlapping freeze windows}
 
 \item \emph{Freeze}
   
@@ -86,28 +88,30 @@ Our algorithm has four phases:
   As in all systems, hardware failures are possible. As a result, we
   must consider how to mitigate against a network disruption or clock
   hardware failure leading to a significant clock desynchronization of
-  an individual or group of nodes. This would be detectable via a major
-  change in NTP's estimate of the clock's offset from the real time.
-  The node reports this event to a central node and that central node would 
-  then be able to check that all of the replicas of the data in the failed 
-  node were safe. As shown above section, all correctly-behaving nodes have an
-  overlapping good time, so if at least one replica of the data in the failed 
-  node behaved correctly, then the snapshot is still safe.
+  an individual or group of nodes. This would be detectable via a
+  major change in NTP's estimate of the clock's offset from the real
+  time.  The node reports this event to a central node and that
+  central node would then be able to check that all of the replicas of
+  the data in the failed node were safe. As shown above section, all
+  correctly-behaving nodes have an overlapping good time, so if at
+  least one replica of the data in the failed node behaved correctly,
+  then the snapshot is still safe.
   
-  Therefore, before a snapshot may be marked as successful, the data center 
-  waits a short period to allow for sudden clock desynchronization
-  events or node failures to be detected. If no unrecoverable inconsistencies 
-  are found, the snapshot is marked as successful.
+  Therefore, before a snapshot may be marked as successful, the data
+  center waits a short period to allow for sudden clock
+  desynchronization events or node failures to be detected. If no
+  unrecoverable inconsistencies are found, the snapshot is marked as
+  successful.
 
 \item \emph{Replication}
   
-  If the snapshot passes the confimation phase, then we begin to transfer the 
-  data in the snapshot to the remote data center. Since the data in the 
-  cluster is distributed, each node must determine what data needs to be 
-  replicated to the remote center. The snapshot is taken when the node first 
-  freezes, so it is simply the state of the data in the node before the node 
-  froze. Replication can be done as a 
-  background process, so while replication is underway, the next 
+  If the snapshot passes the confimation phase, then we begin to
+  transfer the data in the snapshot to the remote data center. Since
+  the data in the cluster is distributed, each node must determine
+  what data needs to be replicated to the remote center. The snapshot
+  is taken when the node first freezes, so it is simply the state of
+  the data in the node before the node froze. Replication can be done
+  as a background process, so while replication is underway, the next
   synchronization phase begins.
 
 \end{enumerate}
