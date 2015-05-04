@@ -1,24 +1,25 @@
 \chapter{Introduction}
 \label{sec:introduction}
 
-Ceph is a highly distributed, strongly consistent file system. It
-stores data redundantly within a data center using a distributed hashing
-algorithm. This hashing algorithm determines how data is divided among
-storage nodes.  By calculating hash information independently, a Ceph
-client may communicate directly with the correct storage nodes rather
-than relying on a separate controller node. The result of this
-approach is a distributed control structure, free of single points of
-failure. This allows Ceph clusters to be very robust. This
-communication structure also has the benefit of improving overall
-performance and scalability by spreading control and communication
-load across all nodes.
+Ceph is a highly distributed, redundant, strongly consistent data
+center-level file system. It is robust to failures within a data
+center, but does not currently provide a mechanism to protect against
+a data center-wide failure (e.g. a severed network fiber line).
+
+A Ceph client is able to communicate directly with the storage nodes
+containing data it accesses rather than relying on a separate
+controller node. This gives a distributed control structure, free of
+single points of failure. This allows Ceph clusters to be very
+robust. This communication structure also has the benefit of improving
+overall performance and scalability by spreading control and
+communication load across all nodes.
 
 For this project, we were tasked with determining a means by which to
 asynchronously geo-replicate the contents of a Ceph cluster. The task
 also specifies requirements for performance and consistency. This
 required overcoming the following complications:
 
-\begin{itemize}
+\begin{itemize} %% TODO snapshots here somehow
 \item Inability to perfectly synchronize clocks between machines
 \item Lack of knowledge of causality relationships between reads and
   writes in the cluster, because Ceph permits out-of-band
@@ -29,18 +30,18 @@ required overcoming the following complications:
 
 Our solution was to use a time synchronization protocol to provide
 uncertainty bounds on the error for each clock in the cluster. These
-uncertainty bounds can be used to create short write holds at each node, 
-called freeze windows. By relating them to the uncertainty in the clock error,
-we can be certain that they overlap, and that overlap is when we can take a
-consistent snapshot of the system. More details about our solution are covered 
-in Chapter~\ref{sec:approach}.
+uncertainty bounds can be used to create short write holds at each
+node, called freeze windows. By relating them to the uncertainty in
+the clock error, we can be certain that they overlap, and that overlap
+is when we can take a consistent snapshot of the system. More details
+about our solution are covered in Chapter~\ref{sec:approach}.
 
-There are a number of other solutions to problems similar to ours. Logical
-clocks are often used to order events, as well as timestamping. Google has
-implemented a library called TrueTime, which provides similar uncertainty
-bounds on the real time in their Spanner database. Chapter~\ref{sec:rel-work} 
-describes these algorithms and why they are not satisfactory solutions for our 
-problem.
+There are a number of other solutions to problems similar to
+ours. Logical clocks are often used to order events, as well as
+timestamping. Google has implemented a library called TrueTime, which
+provides similar uncertainty bounds on the real time in their Spanner
+database. Chapter~\ref{sec:rel-work} describes these algorithms and
+why they are not satisfactory solutions for our problem.
 
 % chapter overview paragraph
 Chapter~\ref{sec:proof} covers a theoretical proof for our algorithm, arguing
