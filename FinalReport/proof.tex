@@ -120,14 +120,5 @@ from the local cluster to the remote cluster, which should be large
 and not a concern if we prioritize normal client traffic over the
 inter-cluster traffic.
 
-If we want to keep track of the uncertainty information of the nodes
-in the Ceph cluster, the cluster will have to store the uncertainty
-values for each node. Though there could be tens of thousands of
-storage nodes, storing even eight bytes of time information would only
-be a few kilobytes of data. Even if it took a megabyte to store all of
-the timestamps, it would not be a significant memory burden. Also,
-reporting clock information to some central nodes storing this
-information would require a constant number of messages for each node
-and, therefore, only a linear number of messages in the number of
-nodes in the cluster.  Based on our analysis, our algorithm should not
-degrade the performance of a Ceph cluster.
+Based on our analysis, our algorithm should not degrade the
+performance of a Ceph cluster.
