@@ -29,13 +29,13 @@ the following complications:
   of a cluster at any specific time as Ceph is currently implemented.
 \end{itemize}
 
-Our solution was to use a time synchronization protocol that provides
+Our snapshotting algorithm, called the Consistent Asynchronous Snapshotting via Time Syncrhonization (CASTS), was to use a time synchronization protocol that provides
 uncertainty bounds on the error for each node's clock in the cluster. These
 uncertainty bounds can be used to create brief periods at each node where writes are 
 held, called freeze windows. By relating the freeze windows to the uncertainty 
 in the clock error, we can be certain that they overlap, and that overlap
 is when we can take a consistent snapshot of the system. More details
-about our solution are covered in Chapter~\ref{sec:approach}.
+about CASTS are covered in Chapter~\ref{sec:approach}.
 
 There are a number of other solutions to problems similar to
 ours. Logical clocks are often used to order events, as well as
@@ -45,7 +45,7 @@ database. Chapter~\ref{sec:rel-work} describes these algorithms and
 why they are not satisfactory solutions for our problem.
 
 % chapter overview paragraph
-Chapter~\ref{sec:proof} covers a theoretical proof for our algorithm,
+Chapter~\ref{sec:proof} covers a theoretical proof for CASTS,
 arguing that our solution will allow us to take a consistent snapshot
 by preserving causal relationships of events. Chapter~\ref{sec:proof} also
 contains a performance analysis of our proof, arguing that the freeze
@@ -68,7 +68,7 @@ The goal of Chapter~\ref{sec:results} is to show that our solution will work
 in practice, not just in theory.
 
 Chapter~\ref{sec:impl} contains implementation details and
-recommendations for a team that will be implementing our snapshotting algorithm
+recommendations for a team that will be implementing CASTS
 into Ceph. Chapter~\ref{sec:future} discusses work that could be done
 to improve on our solution.
 
@@ -76,7 +76,7 @@ In addition to this report, we are also delivering a set of scripts to
 replicate and build on our analysis. These scripts will also be useful
 in analyzing clusters on which consistent geo-replication is
 enabled. Using the results of this clinic project, a future team
-should be able to quickly implement our algorithm in Ceph.
+should be able to quickly implement CASTS in Ceph.
 
 In Appendix~\ref{sec:terms} we provide
 a glossary including technical terms we use in this report.

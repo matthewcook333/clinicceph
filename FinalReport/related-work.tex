@@ -73,8 +73,8 @@ us to use timestamps alone to order events consistently.
 A synchronization algorithm could be effective should it provide
 sufficiently tight, provable bounds on the drift of a given clock and
 on the skew across the distributed system. These bounds provide a
-method to obtain a consistent snapshot as we described in our
-algorithm in Chapter~\ref{sec:approach}.
+method to obtain a consistent snapshot as we described in CASTS
+in Chapter~\ref{sec:approach}.
 
 Many clock synchronization algorithms exist. However, these
 algorithms tend to have major shortcomings when they are considered
@@ -97,7 +97,7 @@ synchronization. NTP uses statistical estimators to predict
 future clock performance. Notably, NTP defines a maximum error
 term of clock skew in relation to a single root time source. Given this maximum
 error term, NTP could be used as a time synchronization method
-in our snapshotting algorithm.
+in CASTS.
 
 However, NTP's focus on robustness
 causes compromises for the length of the freeze windows. NTP consistently overestimates
@@ -127,13 +127,13 @@ more accurate measurements of time.  These measurements should
 provide tighter uncertainty bounds. However, the
 protocol does not specify (and the implementation does not include) an
 upper bound error value. This means that this protocol is not
-currently suited for use with our snapshotting algorithm.
+currently suited for use with CASTS.
 
 If NTP is found to give clock uncertainty bounds that are too large to 
 maintain Ceph's performance, it would be worth considering extending PTP to
 give an upper bound uncertainty value (Chapter~\ref{sec:impl} has a
 brief discussion of this). The implementation of a maximum error term
-would be sufficient for PTP to be used with our snapshotting algorithm.
+would be sufficient for PTP to be used with CASTS.
 
 % NOTE: Don't think these are needed. Awkward to add implementation details 
 %     into related work
@@ -152,7 +152,7 @@ observation to achieve highly synchronized clocks~\citep{Lenzen2010}.
 GPS clocks, by communicating with satellites to compute the time, can act as 
 xnearly perfect time sources. It is
 advisable to incorporate a GPS time source (or similarly accurate time
-source) into the master clock of any implementation of our algorithm
+source) into the master clock of any implementation of CASTS
 in order to achieve tighter uncertainty bounds, though adding this
 would require specialized hardware.  The details of this are discussed
 in Chapter~\ref{sec:impl}.
