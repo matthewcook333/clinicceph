@@ -4,12 +4,12 @@
 Our goal was to design a snapshotting system for Ceph that
 asynchronously replicates data to remote data centers. In this
 chapter, we discuss the details of the problem and the constraints
-that were placed on our solution.
+that were placed on our snapshotting algorithm.
 
 \section{Ceph}
 
 The architecture and requirements of Ceph place many constraints on
-our solution. Ceph is a distributed file system, meaning that data is
+our snapshotting algorithm. Ceph is a distributed file system, meaning that data is
 stored in many different nodes in a Ceph cluster. There is no central
 node through which all read and write requests are sent.  Instead,
 reads and write requests are sent directly to the nodes that contain
@@ -53,14 +53,14 @@ two events.
 
 In addition, Ceph is a very performant system. Currently, writes to a
 Ceph cluster take 4 to 20 milliseconds to perform~\citep{Sage}. Any
-solution that we provide must maintain Ceph's performance, which means
+snapshotting algorithm that we provide must maintain Ceph's performance, which means
 that its read/write capabilities cannot be interrupted for extended
 periods of time.
 
 Finally, Ceph allows a user to use commodity hardware when
 constructing their cluster. This gives users more versatility, but
 adds extra constraints on our problem, since we cannot specify
-hardware that the user must purchase for a solution to work. If commodity 
+hardware that the user must purchase for a snapshotting algorithm to work. If commodity 
 hardware weren't a concern, then we could adapt Google's TrueTime library for 
 Ceph. For a more detailed explanation of TrueTime
 and why it does not solve our problem, see Chapter~\ref{sec:rel-work}.
@@ -145,9 +145,9 @@ ranges of what real time could be in their Spanner database. While
 this solution may seem like it could work, it actually requires
 specific hardware, namely atomic and GPS clocks, to function
 properly. Since Ceph can be running on any commodity hardware, we do
-not want our solution to require specific hardware (though, as we'll
+not want our snapshotting algorithm to require specific hardware (though, as we'll
 see in Chapter~\ref{sec:impl}, specialized hardware can improve the
-performance of our solution). Therefore, we cannot use TrueTime as a
+performance of CASTS). Therefore, we cannot use TrueTime as a
 solution to this problem. 
 
 % distributed architecture and no central log

@@ -34,7 +34,7 @@ and $T_B$ to be the (objective) time at which $B$ occurred. Since $A$
 caused $B$, we know that $A$ must have taken place before $B$, meaning
 $T_A < T_B$.
 
-In Chapter~\ref{sec:approach}, we shows that our solution guarantees
+In Chapter~\ref{sec:approach}, we shows that CASTS guarantees
 that all of the freeze windows of the nodes in our system will overlap
 when we are taking a snapshot. In other words at some point in time or
 for some time period, all nodes will be frozen.  During this interval,
@@ -73,29 +73,29 @@ consistent.
 \section{Performance}
 
 There are several performance characteristics that need to be
-considered to preserve Ceph's performance while implementing a
-snapshotting algorithm. First, we need to consider the impact of
+considered to preserve Ceph's performance while implementing CASTS. 
+First, we need to consider the impact of
 delaying writes for a freeze. Since each node freezes for twice the
 uncertainty bounds that is determined by the time protocol, the
 magnitude of the uncertainty bounds is dependent on which time
-synchronization protocol is used. In Section \ref{sec:results}, We
-analyze the uncertainty that NTP provides and discuss what impact the
-proposed algorithm would have on a Ceph cluster if NTP is used as the
+synchronization protocol is used. In Chapter \ref{sec:results}, we
+analyze the uncertainty that NTP provides and discuss what impact CASTS
+would have on a Ceph cluster if NTP is used as the
 time synchronization protocol. However, as long as a time
 synchronization protocol could provide uncertainties in the 10-20
 millisecond range, yielding 20-40 millisecond
 freeze %% TODO this is inaccurate but idk what we want to do about it
-windows, our algorithm should not impact the cluster's performance in
+windows, CASTS should not impact the cluster's performance in
 a way noticeable to client applications.  Also, freeze windows of each
 of the nodes are offset from each other as they freeze for their own
 individual uncertainty bounds, which means that the point in time
 where the whole Ceph cluster is frozen is much shorter.
 
-In this section, we consider the impact of network link quality on
-this algorithm. We need to be assured that our algorithm does not
+In this section, we consider the impact on network link quality of
+CASTS. We need to be assured that CASTS does not
 require significant amounts of bandwidth which would cause network
 congestion within a Ceph cluster. Since most Ceph clusters are already
-running a time synchronization protocol like NTP, our algorithm does
+running a time synchronization protocol like NTP, CASTS does
 not require any extra messages during the synchronization phase. The
 freeze phase also does not require any extra messages. The number of
 success/failure messages required in the confirmation phase is $O(n)$
@@ -105,7 +105,7 @@ a few bytes). In the replication phase, the remote cluster needs to
 read the data from the local one, but this cost is inherent to any
 snapshotting algorithm.
 
-Finally, we need to consider whether this algorithm will place a
+Finally, we need to consider whether CASTS will place a
 significant computational burden on nodes. Each primary node needs to
 send its data to the remote cluster. This should not impact the
 performance of the primaries, since it should only take a small amount
@@ -120,5 +120,5 @@ from the local cluster to the remote cluster, which should be large
 and not a concern if we prioritize normal client traffic over the
 inter-cluster traffic.
 
-Based on our analysis, our algorithm should not degrade the
+Based on our analysis, CASTS should not degrade the
 performance of a Ceph cluster.
