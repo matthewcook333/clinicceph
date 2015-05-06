@@ -1,4 +1,4 @@
-\chapter{Background and Challenges}
+\chapter{Description of Problem}
 \label{sec:description}
 
 Our goal was to design a snapshotting system for Ceph that
@@ -16,26 +16,23 @@ reads and write requests are sent directly to the nodes that contain
 the relevant data. This means that there is no centralized log of all
 read/write events that the Ceph cluster handles.
 
-Ceph maintains very strong consistency guarantees on the data that's
-stored in its system. It is designed to replicate data on multiple
-nodes, such that one node's failure will not cause a permanent loss of
-data. This will maintain a user's data, even though it is common for
-nodes to fail in a large data center given the number of
-nodes. Ceph holds a confirmation of a write's success until
-it is certain that the data has been stored and properly
-replicated. When a client application receives a confirmation of a write, they can
-be certain that the data has been received and replicated
-properly. These characteristics ensure that a user's data will be kept
-consistent.
+Ceph maintains very strong consistency guarantees on the data that's 
+stored in its system. It is designed to replicate data on multiple nodes, such 
+that one node's failure will not cause a permanent loss of data. This will 
+maintain a user's data, even though it is common for nodes to fail in a large 
+data center given the sheer number of nodes. Ceph will also hold a
+confirmation of a write's success until it is certain that the data has been 
+stored and properly replicated. When a client receives a confirmation of a write, they can be certain that the data has been received and replicated properly. These characteristics ensure that a user's 
+data will be kept consistent.
 
-Ceph allows out-of-band communication for client applications.
-Out-of-band communication is communication that is related to the data
-in the Ceph cluster, but that Ceph does not know about, since it occurs between processes outside of the Ceph cluster. This contrasts with
-in-band communication, which occurs within the Ceph cluster and, therefore, Ceph can see.
+Ceph also allows out-of-band communication for client applications. 
+Out-of-band communication is communication that is related to the data in the 
+Ceph cluster, but that Ceph cannot detect. This contrasts with in-band
+communication, which the Ceph cluster can see and potentially account for. 
 
 \begin{figure}[!htbp]
   \centering
-  \caption{~Two client applications communicating with each other out-of-band.} 
+  \caption{~Two clients communicating with each other out-of-band.} 
   \label{fig:out-of-band}
   \includegraphics[width=0.8\textwidth]{outofbandwrite.png}
 \end{figure}
@@ -47,8 +44,8 @@ behalf of the same application. Let us say the application is a text
 editor. The application may read from (or write to) a text file
 through the first process.  As a result of this operation, the
 application then may decide to write to the second text file through
-the second process. Since these operations are handled by separate
-client applications, Ceph cannot be certain of a causal relationship between the
+the second process. Since these operations are handled by a separate
+client application, Ceph cannot be certain of a causal relationship between the
 two events.
 
 In addition, Ceph is a very performant system. Currently, writes to a
@@ -67,25 +64,25 @@ and why it does not solve our problem, see Chapter~\ref{sec:rel-work}.
 
 \section{Consistent Snapshots}
 
-A snapshotting algorithm will require recording the global state of
-the data in a Ceph cluster. A recording of that global state is called
-a ``snapshot". However, we require that a snapshot be consistent.  A
-consistent snapshot is one that preserves the causal relationships of
-the read/write events that it captures in its recording. This means that, if an event
-is captured, then all events that caused that event must be captured
-as well.
+A solution to this problem will require recording the global state of the 
+data in a Ceph cluster. A recording of that global state is called a 
+``snapshot". However, we require that a snapshot be consistent. 
+A consistent snapshot is one that preserves the causal relationships 
+of the read/write events that it captures. This means that, if an 
+event is captured, then all events that caused that 
+event must be captured as well. 
 
-For example, let's say some event $A$ caused some event $B$.  Then a
-consistent snapshot is one where, if event $B$ is captured, then event
-$A$ is captured as well. If event $B$ were captured, but event $A$ was
-not, then any backup based on that snapshot could cause errors in
-applications that are using that inconsistent data. See
-Figure~\ref{fig:consistency} for examples of consistent and
+For example, let's say some event $A$ caused some event $B$. 
+Then a consistent snapshot 
+is one where, if event $B$ is captured, then event $A$ is captured as well. If
+event $B$ were captured, but event $A$ was not, then any backup based on that
+snapshot could cause errors in applications that are using that inconsistent
+data. See Figure~\ref{fig:consistency} for examples of consistent and 
 inconsistent snapshots.
 
 \begin{figure}[!htbp]
   \centering
-  \caption{~Event A caused event B. The dashed line in the center represents the time when the snapshot took place. The first three cases are examples of consistent snapshots, since B is captured only if A is as well. The last case is an inconsistent snapshot, because B is captured, but A is not.} 
+  \caption{~Event A caused event B. The dashed line in the center represents the time when the snapshot took place. The first three cases are examples of consistent snapshots. The last case is an inconsistent snapshot.} 
   \label{fig:consistency}
   \includegraphics[width=0.75\textwidth]{consistency.png}
 \end{figure}
@@ -149,6 +146,7 @@ not want our snapshotting algorithm to require specific hardware (though, as we'
 see in Chapter~\ref{sec:impl}, specialized hardware can improve the
 performance of CASTS). Therefore, we cannot use TrueTime as a
 solution to this problem. 
+
 
 % distributed architecture and no central log
 % clock drift and timestamps
