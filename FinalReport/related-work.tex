@@ -3,7 +3,7 @@
 
 Creating a consistent snapshot of a Ceph cluster is difficult because
 Ceph is distributed: The system does not have a single or small group
-of nodes that can track every transaction. Instead, the cluster must
+of nodes that can track every I/O operation. Instead, the cluster must
 aggregate knowledge from potentially thousands of nodes to capture a
 complete point-in-time snapshot of its data.  Significant research
 efforts have been directed toward taking snapshots as well as
@@ -15,11 +15,11 @@ particular constraints of Ceph outlined in Chapter
 \section{Logical Clocks}
 
 Lamport clocks use a ``logical clock'' to establish a partial ordering
-of events in distributed systems. If an ordering of the events and
+of events in a distributed system. If an ordering of the events and
 messages between nodes in a distributed system can be established, and
 this ordering is complete enough to take into account all
 dependencies, a snapshot may be obtained by observing which events
-happen before other events.
+happen before other events~\citep{Lamport1978}.
 
 Lamport clocks try to order events and messages by a logical
 timestamp, a counter that increments following each event or message
@@ -33,28 +33,31 @@ outside of the system as it has no knowledge of the order of those
 events. These clocks might still be useful for reasoning about
 interactions that occur strictly within the Ceph cluster, but they
 require a second system that supports out-of-band communication to
-meet Ceph's consistency guarantee~\citep{Lamport1978}.
+meet Ceph's consistency guarantee.
 
 Vector clocks are very similar to Lamport clocks. Instead of
 maintaining a single logical time, each node stores a vector of
-times. Each element of the vector represents other nodes in the
+times. Each element of the vector represents nodes in the
 system.  The value of each element is the time of the last event
-received by that given node in the system. The ordering of events is
+received by that node in the system. The ordering of events is
 based on the relative times stored in the vectors. All messages
 contain the sending node's vector and a node updates its vectors when
 it receives a message. Vector clocks can be superior to Lamport clocks
-for some purposes because they do not assign an arbitrary counter
+because they do not assign an arbitrary counter
 representing time to events. Instead, they use the relative times of
-to other nodes to determine the partial order of the events. However,
+other nodes to determine the partial order of the events. However,
 like Lamport clocks, out-of-band communication is not accounted for
-and events could be incorrectly ordered~\citep{Fidge1988}.
+and events could be incorrectly ordered if we tried to use vector clocks for 
+our snapshotting algorithm~\citep{Fidge1988}.
 
 \section{Network Time Synchronization}
 
 As mentioned in Chapter \ref{sec:description}, total ordering can be
-achieved through timestamps. In theory, this would be able to provide
+achieved through timestamps if we used the timestamp of each event to 
+determine to chronologically order the events. 
+In theory, this would be able to provide
 a total ordering of events including any out-of-band
-communication. Clock drift and skew complicate this approach: When
+communication. Clock drift and disagreement, or ``skew'', complicate this approach: When
 multiple clocks are in use in a distributed system, the clocks must be
 synchronized in order to use timestamps to order events across nodes.
 
@@ -71,68 +74,66 @@ A synchronization algorithm could be effective should it provide
 sufficiently tight, provable bounds on the drift of a given clock and
 on the skew across the distributed system. These bounds provide a
 method to obtain a consistent snapshot as we described in our
-algorithm in Chapter \ref{sec:approach}.
+algorithm in Chapter~\ref{sec:approach}.
 
-Many clock synchronization algorithms already exist. However, these
+Many clock synchronization algorithms exist. However, these
 algorithms tend to have major shortcomings when they are considered
-for application to this problem within a data center. A
-synchronization method must have bounds on the clock error in order
-events in a snapshot, and these error bounds must also be a hard upper
+for snapshotting within a Ceph cluster. A
+synchronization method must have bounds on the clock error to order
+events in a snapshot, and these error bounds must be a hard upper
 bound in order for Ceph to make guarantees about the consistency of
-its snapshots. The following subsections describe different time
+its snapshots as described in Chapter~\ref{sec:approach}. The following subsections describe existing time
 synchronization methods and protocols.
 
-\subsection{Network Time Protocol}
+\subsection{Network Time Protocol (NTP)}
 
 NTP is a robust algorithm for time
 synchronization~\citep{Burbank2010}. NTP is designed to synchronize
-time at geographically separated computers over the internet. As a
+time at geographically separated computers over the Internet. As a
 result, it is resilient to node failure, network unreliability, and
-poor clock quality. NTP requires very little information about the
-network configuration and nodes on which it is operating to provide
-useful synchronization. NTP uses statistical estimators to predict
-future clock performance. Notably, NTP does define a maximum error
-term in relation to a single root time source. Given this maximum
-error term, NTP is a potential choice as a time synchronization method
-in our algorithm.
+poor clock quality. NTP requires little information about the
+network configuration and nodes on which it is operating to provide 
+synchronization. NTP uses statistical estimators to predict
+future clock performance. Notably, NTP defines a maximum error
+term of clock skew in relation to a single root time source. Given this maximum
+error term, NTP could be used as a time synchronization method
+in our snapshotting algorithm.
 
-A better solution is possible, however. NTP's focus on robustness
-causes compromises for the freeze time. NTP consistently overestimates
+However, NTP's focus on robustness
+causes compromises for the length of the freeze windows. NTP consistently overestimates
 uncertainty (see Chapter~\ref{sec:results} for an in-depth examination
 of this issue). A protocol designed for local area network
 synchronization could likely do away with some of the complexity of
 NTP, make more assumptions about network configuration, and as a
-result provide tighter bounds on its error.
+result provide tighter bounds on a node's clock error.
 
 In Chapter~\ref{sec:results}, we analyze the performance of an NTP
 implementation, \texttt{ntpd}, across various clock and network
 conditions. The \texttt{ntpd} daemon was chosen for its common use and
 ease of access to relevant calculated parameters. \texttt{Chrony} is
 another potential choice for an NTP implementation, although it lacks
-some diagnostic
-reporting. %% TODO these were flagged as needing citations
-                      %% but I'm not convinced we really need them?
+a method to extract the hard error bounds.
 
-\subsection{Precision Time Protocol}
+\subsection{Precision Time Protocol (PTP)}
 
-Precision Time Protocol (PTP) is designed for tightly synchronizing
-computers on a local network ~\citeyearpar{2008}. To gain even better
-synchronization with tighter bounds on clock uncertainty than NTP, a
+PTP is designed for tightly synchronizing
+computers on a local network~\citep{2008}. To gain even better
+synchronization with tighter bounds on clock uncertainty than NTP, an 
 user may use specific hardware that supports PTP. Hardware that
-supports PTP is generally included in current data center switches
-already. The type of hardware that supports PTP helps decrease the
+supports PTP is generally included in current data center switches. 
+The type of hardware that supports PTP helps decrease the
 amount of random variation in message latency in a network, enabling
-extremely accurate measurements of time.  These measurements should in
-theory provide extremely tight uncertainty bounds. However, the
+more accurate measurements of time.  These measurements should 
+provide tighter uncertainty bounds. However, the
 protocol does not specify (and the implementation does not include) an
 upper bound error value. This means that this protocol is not
-currently suited for use with our algorithm.
+currently suited for use with our snapshotting algorithm.
 
-If performance of NTP is found to give unsatisfactory clock
-uncertainty bounds, it would be worth considering extending PTP to
+If NTP is found to give clock uncertainty bounds that are too large to 
+maintain Ceph's performance, it would be worth considering extending PTP to
 give an upper bound uncertainty value (Chapter~\ref{sec:impl} has a
 brief discussion of this). The implementation of a maximum error term
-would be sufficient for PTP to be used with our algorithm.
+would be sufficient for PTP to be used with our snapshotting algorithm.
 
 % NOTE: Don't think these are needed. Awkward to add implementation details 
 %     into related work
@@ -142,20 +143,14 @@ would be sufficient for PTP to be used with our algorithm.
 
 \subsection{Wireless Synchronization}
 
-Surprisingly, wireless time synchronization is a much easier
-problem. Wireless signal propagation times are easy to model and as a
-result time synchronization is easy to perform with a high level of
+Wireless time synchronization is an easier problem than wired time 
+synchronization. Wireless signal propagation times are easy to model and as a
+result time synchronization is straightforward to perform with a high level of
 accuracy. Protocols such as PulseSync take advantage of this
 observation to achieve highly synchronized clocks~\citep{Lenzen2010}.
 
-If highly synchronized clocks are a requirement, a wireless
-synchronization protocol could be designed that would allow for a high
-level of confidence on the clock uncertainty bounds.  This would
-require specialized hardware, and one of the goals of this project is
-to provide a solution that can work on any commodity hardware.
-
-GPS Synchronization is a special case of wireless synchronization that
-can provide a nearly perfect time source around the world. It is
+GPS clocks, by communicating with satellites to compute the time, can act as 
+xnearly perfect time sources. It is
 advisable to incorporate a GPS time source (or similarly accurate time
 source) into the master clock of any implementation of our algorithm
 in order to achieve tighter uncertainty bounds, though adding this
@@ -173,20 +168,20 @@ reliability and security.
 A library called TrueTime was developed to support these applications.
 TrueTime does not provide current time in the way that standard time
 libraries do, such as for NTP or PTP. Instead, the ``current time'' it
-gives is a range that is guaranteed to contain the real current
-time. The bounds are claimed to be generally less than 10
-milliseconds. This range in the real current time allows for rapid
-throughput on the database while still maintaining definitive
+gives is a range that is guaranteed to contain the current
+time. The bounds are claimed to be less than 10
+milliseconds. This range in the current time allows for rapid
+throughput on the database, since a freeze for the range would only be in effect for 10 milliseconds, while still maintaining definitive
 transaction ordering. When TrueTime's guaranteed bounds start to
 spread, it will throttle writes to maintain that
 ordering~\citep{Corbett2012}.
 
-TrueTime relies on having extremely accurate and precise clocks to
+TrueTime relies on having accurate and precise clocks to
 maintain sub-10ms skew between geographically diverse data
 centers. Specifically, Google has placed atomic and GPS clocks in
 their data centers. TrueTime runs a daemon that talks to these clocks,
 both in its own data center and in others. TrueTime is able to weed
-out clocks whose timing information is not reliable (e.g. due to
+out clocks whose timing information is not reliable (e.g., due to
 network latency)~\citep{Corbett2012}.
 
 TrueTime is a proprietary library that requires special hardware, thus
