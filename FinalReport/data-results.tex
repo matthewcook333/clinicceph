@@ -2,137 +2,148 @@
 \label{sec:results}
 
 With a theoretical proof of our algorithm, we can move on to testing
-and analyzing its real-world tractability and performance.  Key to
+and analyzing its real-world tractability and performance in creating
+small freeze windows.  Key to
 this endeavor, we must establish that any time synchronization
 protocol we choose is capable of reporting correct and accurate
-uncertainties in the time. As these uncertainties are used in
+uncertainties for a node's time. As these uncertainties are used in
 calculating freeze windows, they must contain the real time
 (correctness), yet be small enough for the algorithm to be performant
 (accuracy).
 
-For the purposes of this project, we chose to make an in depth
+For the purposes of this project, we chose to make an in-depth
 analysis of the NTP implementation \texttt{ntpd}. NTP is an
-off-the-shelf protocol. Choosing an off the shelf protocol would
+off-the-shelf protocol. Choosing an off-the-shelf protocol would
 greatly simplify implementation of our algorithm in Ceph. Of the
 protocols we investigated in Chapter~\ref{sec:rel-work}, NTP is the
-only general purpose, open source protocol that supports the
-uncertainty functionality that our algorithm requires. Its robust
-design also suggests that it may function well in environments
-containing commodity components, as many Ceph deployments do. The
-daemon \texttt{ntpd} is currently the most popular NTP
-implementation. Given these observations, NTP and \texttt{ntpd} were
+only general purpose, open source protocol that has the
+functionality of providing the uncertainty bounds on clock error 
+that our algorithm requires. Its robust
+design also suggests that it can function well in environments
+consisting of commodity components, as many Ceph deployments do. 
+Given these observations, NTP and \texttt{ntpd} were
 clear choices for a close analysis.
 
 We want to determine whether \texttt{ntpd} can correctly and
 accurately report each node's uncertainty. By monitoring \texttt{ntpd}
 on a Ceph cluster, we can gain a sense of the accuracy of uncertainty
 reporting, along with many other statistics. However, in the real
-world we have no way of measuring the absolute offset between a given
-node and its NTP server. This makes testing correctness in the real
-world impossible. As a result, simulations will factor heavily into
+world we have no way of measuring the true difference in time
+between a given node and its NTP server. If we had a way of obtaining
+this measurement, the task of synchronizing clocks would be trivial
+as we could achieve perfect synchronization without any uncertainty.
+Thus, the task of testing correctness by comparing nodes' clocks to a
+reference clock in the real
+world is impossible. As a result, simulations will factor heavily into
 our analysis of \texttt{ntpd}.
 
 This chapter is split into two sections. The first section discusses
 data collection on a Ceph test cluster. This section also details how
 the collected data can be used to improve the testing of \texttt{ntpd}
-in simulations.  The second section analyzes the results of
+in simulations.  The second section describes the setup of the
+simulations of nodes and their clocks and analyzes the results of those
 simulations. It seeks to verify that the measurements and values
 \texttt{ntpd} reports are reasonable, correct, and accurate. This
-section includes a discussion of performance under various network
+section includes a discussion of the performance of the uncertainty
+provided by NTP under various network
 conditions.
 
-We find that NTP and \texttt{ntpd} are a capable algorithm and
-implementation.  The \texttt{ntpd} program will provide correct values
+We show that NTP and \texttt{ntpd} are a capable algorithm and
+implementation for the purpose of time synchronization.  
+The \texttt{ntpd} program will provide correct values
 under any reasonable network configuration. However, a low-latency
 network will ensure best performance. In ultra low-latency
-environments, an alternative protocol should be explored. NTP's robust
-specification, and assumptions of maximum possible error, result in a
-minimum uncertainty on the order of a millisecond.  It is advisable to
-have a top-level clock (such as a GPS clock) co-located with the
-cluster being synchronized. This minimizes error do to multiple levels
-of synchronization and allows NTP to make stronger assumptions about
-the accuracy of the root clock.
+environments, an alternative protocol should be explored to take advantage
+of the possibility of having smaller uncertainty bounds and as a result, 
+smaller freeze windows. NTP's conservative
+assumptions of maximum possible error, result in a
+minimum uncertainty on the order of a millisecond.
 
 
 
-\section{Collection of NTP Performance in a Real-World Setting}
+\section{Measuring \texttt{ntpd}'s Performance in the Real-World}
 
 In order to accurately simulate the characteristics of a real Ceph
-cluster to test \texttt{ntpd}, we need to model the behavior of a real
+cluster to test \texttt{ntpd}, we need to model the behavior of a
 Ceph cluster.
 
 To observe how \texttt{ntpd} interacts with a live Ceph cluster, we
-logged diagnostic data on a test Ceph cluster for a period of months.
+logged diagnostic data, described below, on a test Ceph cluster 
+for a period of months.
 The test cluster on which we logged data includes three
 classifications of computers, named here Mira, Plana, and
-Burnupi. Miras and Planas use Intel-based chips, while Burnupi uses
+Burnupi. Mira and Plana use Intel-based chips, while Burnupi uses
 AMD chips.
 
-Of the diagnostic data being logged, we considered two parameters most
-interesting: clock frequency offset and network latency.  The
+Of the diagnostic data being logged, we considered two parameters of
+interest: clock frequency offset and network latency.  The
 frequency offset is the estimated random error on a given node's clock
 drift in comparison to the NTP server, and is typically measured in
 Parts Per Million (PPM). For example, a clock frequency offset
-measurement of 10 PPM would mean for every million clock ticks of the
+measurement of 10 PPM means for every million clock ticks of the
 NTP server, the local
 %TODO: is this really freq offset? Is there a better way to describe it?
 node's clock could be off by 10 ticks. The network latency is a
 measure of the round trip time of the message passed between a local
 machine in the Ceph cluster to the NTP server and back. The round trip
-time is typically on the order of milliseconds~\citep{Sage}.
+time is typically on the order of single-digit milliseconds~\citep{Sage}.
 
 %TODO: Do we need 4 sig figs here? I doubt we can claim more than one or two...
 The histogram in Figure~\ref{fig:latency-hist} shows the logged values
 of network latency in the cluster. The difference in network latency
 between each type of machine is not statistically significant, as we
 would expect given that the network latency between machines should
-not depend on the types of machines in the network.
+not depend on the type of machines in the network.
 %TODO: Did you actually do a p-test? Do you have a significance level if you did?
 
 \begin{figure}[h]
   \centering
-  \caption{~Histogram of network latency across 234 nodes in a Ceph test cluster. The mean is 2.668 ms, the 
-  standard deviation is 10.304 ms, and the median is 0.643 ms.} 
+  \caption{~Histogram of network latency across 234 nodes in a Ceph test cluster. The mean is 2.7 ms, the 
+  standard deviation is 10.3 ms, and the median is 0.6 ms.} 
   \label{fig:latency-hist}
   \includegraphics[width=0.8\textwidth]{latency-hist.png}
 \end{figure}
 
 \begin{figure}[!htbp]
   \centering
-  \caption{~Histogram of NTP's frequency offset for Burnupi machines in the Ceph test cluster.}
+  \caption{~Histogram of NTP's frequency offset for Burnupi machines in the Ceph test cluster.
+  The average frequency
+  offset for individual Burnupi machines is -5.2 PPM with average
+  standard deviation 1.1 PPM.}
   \label{fig:burnupi-hist}
   \includegraphics[width=0.8\textwidth]{burnupi-freq-offset.png}
 \end{figure}
 
 \begin{figure}[!htbp]
   \centering
-  \caption{~Histogram of NTP's frequency offset for Mira machines in the Ceph test cluster.}
+  \caption{~Histogram of NTP's frequency offset for Mira machines in the Ceph test cluster.
+  The average frequency offset for individual Mira machines is 10.8 PPM with average
+  standard deviation 0.4 PPM.}
   \label{fig:mira-hist}
   \includegraphics[width=0.8\textwidth]{mira-freq-offset.png}
 \end{figure}
 
 \begin{figure}[!htbp]
   \centering
-  \caption{~Histogram of NTP's frequency offset for Plana machines in the Ceph test cluster.}
+  \caption{~Histogram of NTP's frequency offset for Plana machines in the Ceph test cluster.
+  The average frequency offset for individual Plana machines is 13.3 PPM with average
+  standard deviation 1.7 PPM.}
   \label{fig:plana-hist}
   \includegraphics[width=0.8\textwidth]{plana-freq-offset.png}
 \end{figure}
 
+
 Figures~\ref{fig:burnupi-hist},~\ref{fig:mira-hist},
 and~\ref{fig:plana-hist} show the behavior of clock frequency offset
-on the three types of machines in the Ceph cluster. Despite the
-different offsets, these are consistent with a normal
-distribution. These values are reasonable as we would generally expect
-frequency offset to be at most $\pm 20$ PPM.  The average frequency
-offset for individual Burnupi machines is -5.216 PPM with average
-standard deviation 1.079 PPM, Mira nodes with 10.752 PPM with average
-standard deviation 0.356, and Plana nodes with 13.341 PPM with average
-standard deviation 1.690. The average standard deviation across all
-nodes is 1.033 PPM. It is interesting to note that the Burnupi
+on the three types of machines in the Ceph cluster. The distribution of frequency
+offsets on all three types of machines are consistent with a 
+normal distribution. The average standard deviation across all
+nodes is 1.033 PPM, and the mean values of each type are reasonable as we would 
+generally expect frequency offset to be at most $\pm 20$ PPM~\citep{gregscott}. 
+It is interesting to note that the Burnupi
 machines with the AMD chips have primarily negative clock frequency
 offset, while the Mira and Plana machines with Intel chips have
 primarily positive clock frequency offsets.
-%TODO: I think I would put the statistics in the captions
 
 
 
@@ -144,8 +155,8 @@ primarily positive clock frequency offsets.
 
 With the data collected on frequency offset and network latency, we
 can now simulate a test cluster with input parameters that reflect the
-real world. Recall the fact that we cannot simply use a real Ceph
-cluster to observe the overlapping freeze windows because there is no
+real world. Recall that we cannot simply use a real Ceph
+cluster to observe overlapping freeze windows because there is no
 way to observe the real time on a given computer. A simulated network
 environment running on a single computer has the advantage of having a
 single clock on which all simulated clocks are based. By having a
@@ -185,39 +196,39 @@ it can shape the behavior of the clock and network parameters to test
 different setups and hardware properties.
 
 We are most interested in measuring two parameters in this system. We
-first want to determine if the maximum uncertainty reported by NTP is
-correct. We can check that the maximum uncertainty report is correct
+first want to determine if the uncertainty bounds reported by NTP is
+correct. We can check that the uncertainty bounds report is correct
 by ensuring that the uncertainty bounds on a given machine clock's
 time includes the real time.  The \texttt{clknetsim} package, for a
-given timestamp in the simulation, allows us to observe what NTP
-thinks the time is along with information about how certain NTP is
+given point-in-time in the simulation, allows us to observe what NTP
+estimates the time is along with information about how certain NTP is
 about that time. Our second goal is to analyze the accuracy of the
 time synchronization: the magnitude of the uncertainty.  As our
 algorithm is predicated on a upper bound of the uncertainty in time,
 performance analysis can be accomplished by observing how modifying
-various parameters such as network latency affect the maximum error
-term that NTP reports.
+parameters such as network latency affect the uncertainty bounds
+that NTP reports.
 %TODO: effect?
 
-\subsection{Simulation Using Real World Parameters}
+\subsection{Simulation Using Real-World Parameters}
 
-At each node, NTP has an estimate for the real time and an uncertainty
-in that estimate. Clknetsim allows us to access that information, and
-it allows us to know the real time of the system. All of this allows
+For each node, NTP has an estimate for the real time and an uncertainty
+in that estimate. \texttt{Clknetsim} allows us to access that information, and
+it lets us to know the real time of the system. All of this admits
 us to know what the ``safety buffer" is for each node in real time.
 
-The safety buffer, $S(t)$,  for a particular node is defined as:
+Recall the safety buffer first introduced in Chapter~\ref{sec: approach}, $S(t)$,  for a particular node is defined as:
 
 \[ S(t) = U(t) - | t - E(t)| \]
 
 where $t$ is the real time, $U(t)$ is NTP's uncertainty in the real
 time estimate for that node, and E(t) is NTP's estimate for what the
-real time is. In simpler terms, the safety buffer tells us where NTP's
-error in what the real time is lies within its uncertainty range (see
+real time is. In simpler terms, the safety buffer tells us where in NTP's
+uncertainty range lies the error from real time (see
 Figure~\ref{fig:safety-diag}). If the safety buffer is a positive
 value, then the difference between NTP's estimate and real time is
 within its uncertainty range. If it is negative, then its error is
-outside of its uncertainty range, meaning that NTP doesn't function as
+outside of its uncertainty range, meaning that NTP does not function as
 we would expect.
 
 \begin{figure}[!htbp]
@@ -409,7 +420,7 @@ individual node's clock's drift variance is inconsequential to the
 final performance of our algorithm.
 
 Because uncertainties compound in NTP, it is advisable to acquire a
-single, good clock to serve as a master. This will significantly
+single, good clock (such as a GPS clock) to serve as a master. This will significantly
 decrease freeze windows.
 
 
