@@ -3,36 +3,37 @@
 
 With our research and analysis, we have also found points of interest
 should Red Hat or a future clinic team choose to pursue them. For one,
-the algorithm proposed can be used with any time synchronization
+\alg can be used with any time synchronization
 protocol that provides guarantees on the clock uncertainty bounds. As
 such, alternative time protocols such as Chrony or the Precision Time
 Protocol (PTP) can be investigated to see if they could provide
 tighter uncertainty bounds than NTP. As of the time of this writing,
-those two particular protocols cannot provide guarantees on the
+Chrony and PTP implementations cannot provide guarantees on the
 uncertainty bounds, but could possibly be extended to include them and
-perhaps improve upon the bounds of NTP.
+perhaps improve upon the bounds of \texttt{ntpd}.
 
-In addition, the algorithm proposed could be tested on a wider range
-of scenarios than was done for this project to prove its
-performance. The testing we did is more representative of smaller data
+In addition, \alg could be tested on a wider range
+of data center, network, and server configurations.
+The testing we performed is more representative of smaller data
 centers with a single NTP server for synchronization. Other tests
-could include very large data centers, which would give more
-uncertainty on the network latency values and, more importantly, use
-more than one NTP server.
+could include very large data centers, which could result in more uncertainty 
+in observed network latency values and, more importantly, could require 
+more than one NTP server (and thereby increase uncertainties introduced by
+multiple layers of synchronizing clocks Chapter~\ref{sec:impl}).
 
 For our simulations, the model we currently use for clock drifting
-behavior is a consistently normal distribution. Unfortunately, we were
+behavior is a normal distribution. Unfortunately, we were
 unable to find literature describing better models for clock drifting
 behavior. With further analysis and testing, a better model could be
 found for clock drifting behavior to help analyze the performance of
-the behavior. The clock drifting behavior is very dependent on
-variables such as the Quartz crystal used, temperature and pressure
-variance, and changes due to the synchronization process.
+the behavior. The clock drifting behavior is dependent on
+variables such as the Quartz crystal used in the clock, temperature and pressure
+variance in the room, and changes due to the synchronization process.
 
 
 
-Lastly, our algorithm still needs to be implemented and incorporated
-into Ceph. Our recommendations to approach this challenge are outlined
-in section~\ref{sec:impl}. We believe that with a comfortable
-understanding of the Ceph infrastructure, our algorithm could be
-implemented without significant struggle.
+Lastly, \alg still needs to be implemented in 
+Ceph. We outlined particular considerations for implementation
+in Chapter~\ref{sec:impl}. We believe that with a comfortable
+understanding of the Ceph infrastructure, \alg will be straightforward 
+to implement in Ceph.
