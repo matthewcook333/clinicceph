@@ -16,7 +16,7 @@ reads and write requests are sent directly to the nodes that contain
 the relevant data. This means that there is no centralized log of all
 read/write events that the Ceph cluster handles.
 
-Ceph maintains very strong consistency guarantees on the data that's 
+Ceph maintains very strong consistency guarantees on the data that is 
 stored in its system. It is designed to replicate data on multiple nodes, such 
 that one node's failure will not cause a permanent loss of data. This will 
 maintain a user's data, even though it is common for nodes to fail in a large 
@@ -58,7 +58,7 @@ Finally, Ceph allows a user to use commodity hardware when
 constructing their cluster. This gives users more versatility, but
 adds extra constraints on our problem, since we cannot specify
 hardware that the user must purchase for a snapshotting algorithm to work. If commodity 
-hardware weren't a concern, then we could adapt Google's TrueTime library for 
+hardware were not a concern, then we could adapt Google's TrueTime library for 
 Ceph. For a more detailed explanation of TrueTime
 and why it does not solve our problem, see Chapter~\ref{sec:rel-work}.
 
@@ -72,7 +72,7 @@ of the read/write events that it captures. This means that, if an
 event is captured, then all events that caused that 
 event must be captured as well. 
 
-For example, let's say some event $A$ caused some event $B$. 
+For example, let us say some event $A$ caused some event $B$. 
 Then a consistent snapshot 
 is one where, if event $B$ is captured, then event $A$ is captured as well. If
 event $B$ were captured, but event $A$ was not, then any backup based on that
@@ -142,7 +142,7 @@ ranges of what real time could be in their Spanner database. While
 this solution may seem like it could work, it actually requires
 specific hardware, namely atomic and GPS clocks, to function
 properly. Since Ceph can be running on any commodity hardware, we do
-not want our snapshotting algorithm to require specific hardware (though, as we'll
+not want our snapshotting algorithm to require specific hardware (though, as we will
 see in Chapter~\ref{sec:impl}, specialized hardware can improve the
 performance of CASTS). Therefore, we cannot use TrueTime as a
 solution to this problem. 
