@@ -1,22 +1,24 @@
 \chapter{Introduction}
 \label{sec:introduction}
 
-Ceph is a highly distributed, strongly consistent file system. It
-stores data redundantly within a data center using a distributed hashing
-algorithm. This hashing algorithm determines how data is divided among
-storage nodes.  By calculating hash information independently, a Ceph
-client may communicate directly with the correct storage nodes rather
-than relying on a separate controller node. The result of this
-approach is a distributed control structure, free of single points of
-failure. This allows Ceph clusters to be very robust. This
-communication structure also has the benefit of improving overall
-performance and scalability by spreading control and communication
-load across all nodes.
+Ceph is a highly distributed, redundant, strongly consistent data
+center-level file system. It is robust to failures within a data
+center, but does not currently provide a mechanism to protect against
+a data center-wide failure (e.g. a severed network fiber line).
+
+A Ceph client is able to communicate directly with the storage nodes
+containing data it accesses rather than relying on a separate
+controller node. This gives a distributed control structure, free of
+single points of failure. This allows Ceph clusters to be very
+robust. This communication structure also has the benefit of improving
+overall performance and scalability by spreading control and
+communication load across all nodes.
 
 For this project, we were tasked with determining a means by which to
-asynchronously geo-replicate the contents of a Ceph cluster. The task
-also specifies requirements for performance and consistency. This
-required overcoming the following complications:
+asynchronously geo-replicate the contents of a Ceph cluster. The data is 
+transfered in recordings of the global state of the cluster, called snapshots.
+These snapshots must be consistent and performant, which required overcoming 
+the following complications:
 
 \begin{itemize}
 \item Inability to perfectly synchronize clocks between machines.
@@ -27,55 +29,54 @@ required overcoming the following complications:
   of a cluster at any specific time as Ceph is currently implemented.
 \end{itemize}
 
-Our solution was to use a time synchronization protocol to provide
-uncertainty bounds on the error for each clock in the cluster. These
-uncertainty bounds can be used to create short write holds at each node, 
-called freeze windows. By relating them to the uncertainty in the clock error,
-we can be certain that they overlap, and that overlap is when we can take a
-consistent snapshot of the system. More details about our solution are covered 
-in Chapter~\ref{sec:approach}.
+Our solution was to use a time synchronization protocol that provides
+uncertainty bounds on the error for each node's clock in the cluster. These
+uncertainty bounds can be used to create brief periods at each node where writes are 
+held, called freeze windows. By relating the freeze windows to the uncertainty 
+in the clock error, we can be certain that they overlap, and that overlap
+is when we can take a consistent snapshot of the system. More details
+about our solution are covered in Chapter~\ref{sec:approach}.
 
-There are a number of other solutions to problems similar to ours. Logical
-clocks are often used to order events, as well as timestamping. Google has
-implemented a library called TrueTime, which provides similar uncertainty
-bounds on the real time in their Spanner database. Chapter~\ref{sec:rel-work} 
-describes these algorithms and why they are not satisfactory solutions for our 
-problem.
+There are a number of other solutions to problems similar to
+ours. Logical clocks are often used to order events, as well as
+timestamping. Google has implemented a library called TrueTime, which
+provides similar uncertainty bounds on the real time in their Spanner
+database. Chapter~\ref{sec:rel-work} describes these algorithms and
+why they are not satisfactory solutions for our problem.
 
 % chapter overview paragraph
-Chapter~\ref{sec:proof} covers a theoretical proof for our algorithm, arguing
-that our solution will allow us to take a consistent snapshot by preserving 
-event causal relationships. Chapter~\ref{sec:proof} also contains a 
-performance analysis of our proof, arguing that the freeze windows will not be 
-long enough to impact performance and that our solution will not put a 
-significant burden on network availability or node performance. 
+Chapter~\ref{sec:proof} covers a theoretical proof for our algorithm,
+arguing that our solution will allow us to take a consistent snapshot
+by preserving causal relationships of events. Chapter~\ref{sec:proof} also
+contains a performance analysis of our proof, arguing that the freeze
+windows will not be long enough to impact Ceph's I/O availability and that our
+solution will not put a significant burden on network availability or
+on the nodes in the cluster.
 
-Chapter~\ref{sec:results} covers our concrete testing of our solution, which
-includes:
+Chapter~\ref{sec:results} covers our concrete testing of our solution,
+which includes:
+
 \begin{itemize}
-\item the collection of data from a real Ceph cluster to create latency and
-clock drift models;
-\item simulations showing that the uncertainty bounds provided by the Network 
-Time Protocol (NTP) behave as expected;
-\item simulations that test NTP's performance in a multitude of cluster
-configurations.
+\item the collection of data from a Ceph cluster to create
+  latency and clock drift models;
+\item simulations showing that the uncertainty bounds defined by the
+  Network Time Protocol (NTP) will contain the real time;
+\item simulations that test NTP's performance in a multitude of
+  cluster configurations.
 \end{itemize}
 The goal of Chapter~\ref{sec:results} is to show that our solution will work
 in practice, not just in theory.
 
-Chapter~\ref{sec:impl} contains implementation details and recommendations for
-a team that will be implementing our algorithm into Ceph. Chapter~\ref{sec:future} 
-discusses work that could be done to improve on our solution.
+Chapter~\ref{sec:impl} contains implementation details and
+recommendations for a team that will be implementing our snapshotting algorithm
+into Ceph. Chapter~\ref{sec:future} discusses work that could be done
+to improve on our solution.
 
-In addition to this report, we are also delivering a set of utilities
-and scripts to replicate and extend our analysis. These scripts will
-also be useful in analyzing clusters on which consistent
-geo-replication is enabled. Using the results of this clinic project,
-a future team should be able to quickly implement our algorithm in
-Ceph.
+In addition to this report, we are also delivering a set of scripts to
+replicate and build on our analysis. These scripts will also be useful
+in analyzing clusters on which consistent geo-replication is
+enabled. Using the results of this clinic project, a future team
+should be able to quickly implement our algorithm in Ceph.
 
-In Appendix~\ref{sec:terms} on page~\pageref{sec:terms} we provide
+In Appendix~\ref{sec:terms} we provide
 a glossary including technical terms we use in this report.
-
-
-%TODO makeing clear that we aren't delivering code

@@ -7,13 +7,13 @@ of the problem and the constraints that were placed on our solution.
 
 \section{Ceph}
 
-The architecture and requirements of Ceph place many constraints on our
-solution. Ceph is a distributed file system, meaning that data is stored in
-many different nodes in a Ceph cluster. There
-is no central node through which all read and write requests are sent. 
-Instead, reads and write requests are sent directly to the nodes that contain
-the relevant data. This means that there is no centralized log of all of the
-read and write events that the Ceph cluster handles.
+The architecture and requirements of Ceph place many constraints on
+our solution. Ceph is a distributed file system, meaning that data is
+stored in many different nodes in a Ceph cluster. There is no central
+node through which all read and write requests are sent.  Instead,
+reads and write requests are sent directly to the nodes that contain
+the relevant data. This means that there is no centralized log of all
+read/write events that the Ceph cluster handles.
 
 Ceph maintains very strong consistency guarantees on the data that's 
 stored in its system. It is designed to replicate data on multiple nodes, such 
