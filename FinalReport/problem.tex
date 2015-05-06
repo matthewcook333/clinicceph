@@ -117,7 +117,7 @@ each clock uses its own clock when determining the timestamp of an
 event. Using the timestamps by themselves will not allow us to get a
 total ordering of the events, since the clocks would slowly become
 more and more desynchronized, until the clocks are no longer reliable
-ways to distinguish when events occured on different nodes. An event
+ways to distinguish when events occurred on different nodes. An event
 could receive a later timestamp than an event it caused. If those timestamps 
 were used to take a snapshot, it could create an inconsistent snapshot of our 
 system.

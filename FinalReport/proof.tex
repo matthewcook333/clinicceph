@@ -88,7 +88,7 @@ uncertainty that NTP provides and discuss what impact CASTS would have
 on a Ceph cluster if NTP is used as the time synchronization
 protocol. However, as long as a time synchronization protocol could
 provide uncertainties in the 5-10 millisecond range, yielding 10-20
-millisecond freeze windows, our algorithm should not impact the
+millisecond freeze windows, CASTS should not impact the
 cluster's performance in a way noticeable to client
 applications~\parencite{Sage}. Also, each node's freeze window is
 offset from other nodes', because each freezes for its own individual

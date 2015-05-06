@@ -29,7 +29,7 @@ the following complications:
   of a cluster at any specific time as Ceph is currently implemented.
 \end{itemize}
 
-Our snapshotting algorithm, called the Consistent Asynchronous Snapshotting via Time Syncrhonization (CASTS), was to use a time synchronization protocol that provides
+Our snapshotting algorithm, called the Consistent Asynchronous Snapshotting via Time Synchronization (CASTS), was to use a time synchronization protocol that provides
 uncertainty bounds on the error for each node's clock in the cluster. These
 uncertainty bounds can be used to create brief periods at each node where writes are 
 held, called freeze windows. By relating the freeze windows to the uncertainty 
