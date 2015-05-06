@@ -31,7 +31,7 @@ Figure~\ref{fig:consistentoverlap}.
 
 \begin{figure}[!htbp]
   \centering
-  \caption{All possible event orders given that A caused B. Yellow and green boxes are node freeze windows for two different nodes, and the dotted blue line is the overlap when the snapshot is taken. We can see that B is captured only if A is captured.}
+  \caption{~All possible event orders given that A caused B. Yellow and green boxes are node freeze windows for two different nodes, and the dotted blue line is the overlap when the snapshot is taken. We can see that B is captured only if A is captured.}
   \label{fig:consistentoverlap}
   \includegraphics[width=0.75\textwidth]{consistentoverlap.png}
 \end{figure}
@@ -95,11 +95,11 @@ offset from other nodes', because each freezes for its own individual
 uncertainty bounds, so the period of time for which the whole Ceph cluster is
 frozen is much.
 
-In this section, we consider the impact of network link quality on
-this algorithm. We need to be assured that our algorithm does not
+In this section, we consider the impact on network link quality of
+CASTS. We need to be assured that CASTS does not
 require significant amounts of bandwidth which would cause network
 congestion within a Ceph cluster. Since most Ceph clusters are already
-running a time synchronization protocol like NTP, our algorithm does
+running a time synchronization protocol like NTP, CASTS does
 not require any extra messages during the synchronization phase. The
 freeze phase also does not require any extra messages. The number of
 success/failure messages required in the confirmation phase is $O(n)$
@@ -124,5 +124,5 @@ cluster to the remote cluster. The inter-cluster pipe should be
 large and not a concern if we prioritize normal client traffic over
 the inter-cluster traffic.
 
-Based on our analysis, our algorithm should not degrade the
+Based on our analysis, CASTS should not degrade the
 performance of a Ceph cluster.
