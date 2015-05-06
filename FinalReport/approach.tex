@@ -34,9 +34,10 @@ in other words, how much more wrong our clock could have been without
 violating the guarantees of CASTS.
 
 \begin{figure}
-\includegraphics[width=0.8\textwidth]{safety-diagram.png}
+\centering
 \caption{~The gap between the edge of the freeze window and the real snapshot time is called the safety buffer.}
 \label{fig:safety-buff}
+\includegraphics[width=0.8\textwidth]{safety-diagram.png}
 \end{figure}
 
 
@@ -48,9 +49,9 @@ of 8pm.
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
   \caption{~Each box is the freeze window of a given node. The x axis is progression of ``real" time. Note that they all overlap with ``true" 8PM.}
   \label{fig:overlapping-windows}
+  \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
 \end{figure}
 
 

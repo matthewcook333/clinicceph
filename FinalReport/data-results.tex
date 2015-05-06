@@ -233,9 +233,9 @@ outside of its uncertainty range, meaning that NTP does not function as
 we would expect.
 
 \begin{figure}[!htbp]
+  \centering
   \caption{~The safety buffer tells us where NTP's error in what the real time is lies within its uncertainty range.} 
   \label{fig:safety-diag}
-  \centering
   \includegraphics[width=0.5\textwidth]{safety-diagram.png}
 \end{figure}
 
@@ -253,14 +253,14 @@ We can see that all of these values are positive. The daemon
 conditions we observed.
 
 \begin{figure}[!htbp]
-  \caption{~Generated from uncertainty data recorded during simulation parameterized
+  \centering
+  \caption{~Generated from uncertainty data recorded during simulation paramaterized
   with latencies recorded during monitoring of Ceph cluster. Uncertainty and time
   data was recorded once per second in the simulation and the included statistics 
   generated from the total dataset after the simulation was allowed to stabilize. 
   The positive values indicate that the real time is occurring within \texttt{ntpd}'s 
   uncertainty interval.}
   \label{fig:safety-data}
-  \centering
   \includegraphics[width=0.55\textwidth]{5pointsSafety.png}
 \end{figure}
 
