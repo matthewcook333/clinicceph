@@ -13,7 +13,7 @@ many different nodes in a Ceph cluster. There
 is no central node through which all read and write requests are sent. 
 Instead, reads and write requests are sent directly to the nodes that contain
 the relevant data. This means that there is no centralized log of all of the
-reads/writes events that the Ceph cluster handles.
+read and write events that the Ceph cluster handles.
 
 Ceph maintains very strong consistency guarantees on the data that's 
 stored in its system. It is designed to replicate data on multiple nodes, such 
