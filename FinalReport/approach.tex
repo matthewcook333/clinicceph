@@ -4,7 +4,7 @@
 CASTS uses the error bounds, or uncertainty, on clock
 error provided by time synchronization protocols like NTP to create
 freeze windows (as first discussed in Chapter~\ref{sec:description})
-at each node. In Chapter~\ref{proof} we will show that these freeze
+at each node. In Chapter~\ref{sec:proof} we will show that these freeze
 windows' lengths are such that they all overlap at a particular point
 in time, which ensures that the snapshots we take are consistent. In
 this chapter, we discuss how we use those freeze windows to take a
@@ -34,9 +34,10 @@ in other words, how much more wrong our clock could have been without
 violating the guarantees of CASTS.
 
 \begin{figure}
-\includegraphics[width=0.8\textwidth]{safety-diagram.png}
+\centering
 \caption{~The gap between the edge of the freeze window and the real snapshot time is called the safety buffer.}
 \label{fig:safety-buff}
+\includegraphics[width=0.8\textwidth]{safety-diagram.png}
 \end{figure}
 
 
@@ -48,9 +49,9 @@ of 8pm.
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
   \caption{~Each box is the freeze window of a given node. The x axis is progression of ``real" time. Note that they all overlap with ``true" 8PM.}
   \label{fig:overlapping-windows}
+  \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
 \end{figure}
 
 
