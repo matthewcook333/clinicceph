@@ -15,11 +15,12 @@ overall performance and scalability by spreading control and
 communication load across all nodes.
 
 For this project, we were tasked with determining a means by which to
-asynchronously geo-replicate the contents of a Ceph cluster. The task
-also specifies requirements for performance and consistency. This
-required overcoming the following complications:
+asynchronously geo-replicate the contents of a Ceph cluster. The data is 
+transfered in recordings of the global state of the cluster, called snapshots.
+These snapshots must be consistent and performant, which required overcoming 
+the following complications:
 
-\begin{itemize} %% TODO snapshots here somehow
+\begin{itemize}
 \item Inability to perfectly synchronize clocks between machines
 \item Lack of knowledge of causality relationships between reads and
   writes in the cluster, because Ceph permits out-of-band
@@ -28,11 +29,11 @@ required overcoming the following complications:
   of a cluster at any specific time as Ceph is currently implemented.
 \end{itemize}
 
-Our solution was to use a time synchronization protocol to provide
-uncertainty bounds on the error for each clock in the cluster. These
-uncertainty bounds can be used to create short write holds at each
-node, called freeze windows. By relating them to the uncertainty in
-the clock error, we can be certain that they overlap, and that overlap
+Our solution was to use a time synchronization protocol that provides
+uncertainty bounds on the error for each node's clock in the cluster. These
+uncertainty bounds can be used to create brief periods at each node where writes are 
+held, called freeze windows. By relating the freeze windows to the uncertainty 
+in the clock error, we can be certain that they overlap, and that overlap
 is when we can take a consistent snapshot of the system. More details
 about our solution are covered in Chapter~\ref{sec:approach}.
 
@@ -46,20 +47,20 @@ why they are not satisfactory solutions for our problem.
 % chapter overview paragraph
 Chapter~\ref{sec:proof} covers a theoretical proof for our algorithm,
 arguing that our solution will allow us to take a consistent snapshot
-by preserving event causal relationships. Chapter~\ref{sec:proof} also
+by preserving causal relationships of events. Chapter~\ref{sec:proof} also
 contains a performance analysis of our proof, arguing that the freeze
-windows will not be long enough to impact performance and that our
+windows will not be long enough to impact Ceph's I/O availability and that our
 solution will not put a significant burden on network availability or
-node performance.
+on the nodes in the cluster.
 
 Chapter~\ref{sec:results} covers our concrete testing of our solution,
 which includes:
 
 \begin{itemize}
-\item the collection of data from a real Ceph cluster to create
+\item the collection of data from a Ceph cluster to create
   latency and clock drift models;
-\item simulations showing that the uncertainty bounds provided by the
-  Network Time Protocol (NTP) behave as expected;
+\item simulations showing that the uncertainty bounds defined by the
+  Network Time Protocol (NTP) will contain the real time;
 \item simulations that test NTP's performance in a multitude of
   cluster configurations.
 \end{itemize}
@@ -67,7 +68,7 @@ The goal of Chapter~\ref{sec:results} is to show that our solution will work
 in practice, not just in theory.
 
 Chapter~\ref{sec:impl} contains implementation details and
-recommendations for a team that will be implementing our algorithm
+recommendations for a team that will be implementing our snapshotting algorithm
 into Ceph. Chapter~\ref{sec:future} discusses work that could be done
 to improve on our solution.
 
@@ -79,6 +80,3 @@ should be able to quickly implement our algorithm in Ceph.
 
 In Appendix~\ref{sec:terms} we provide
 a glossary including technical terms we use in this report.
-
-
-%TODO makeing clear that we aren't delivering code

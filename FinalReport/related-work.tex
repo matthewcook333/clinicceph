@@ -58,6 +58,15 @@ communication. Clock drift and skew complicate this approach: When
 multiple clocks are in use in a distributed system, the clocks must be
 synchronized in order to use timestamps to order events across nodes.
 
+Time synchronization protocols like the Network Time Protocol (NTP)
+could help keep the clocks in the system from desynchronizing too
+greatly. In theory, a time synchronization protocol could be so effective that 
+the clock errors in the system would be small enough to allow for timestamps 
+alone to be used to order events. However, no time synchronization protocol 
+we have been able to
+find can maintain clock synchronization well enough that would allow
+us to use timestamps alone to order events consistently. 
+
 A synchronization algorithm could be effective should it provide
 sufficiently tight, provable bounds on the drift of a given clock and
 on the skew across the distributed system. These bounds provide a
