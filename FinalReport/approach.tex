@@ -15,7 +15,7 @@ consistent snapshot at a prescheduled time.
 
 Each node knows the intended snapshot time. However, since their
 clocks cannot be perfectly synchronized, they cannot know exactly when
-they have reached it. The freeze windows for our algorithm are
+they have reached it. The freeze windows for CASTS are
 designed to ensure that all of the nodes in the cluster are frozen at
 the snapshot time.
 
@@ -31,7 +31,7 @@ Figure~\ref{fig:safety-buff} shows the snapshot time within a freeze
 window and the ``safety buffer", which is the extra time between the
 snapshot time and the closest boundary of the freeze window. This is,
 in other words, how much more wrong our clock could have been without
-violating the guarantees of the snapshot algorithm.
+violating the guarantees of CASTS.
 
 \begin{figure}
 \includegraphics[width=0.8\textwidth]{safety-diagram.png}
@@ -47,22 +47,22 @@ this concept with four freeze windows overlapping at the snapshot time
 of 8pm.
 
 \begin{figure}[!htbp]
- \centering
- \caption{ Each box is the freeze window of a given node. The x axis is progression of ``real" time. Note that they all overlap with ``true" 8PM.}
- \label{fig:overlapping-windows}
- \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
+  \centering
+  \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
+  \caption{~Each box is the freeze window of a given node. The x axis is progression of ``real" time. Note that they all overlap with ``true" 8PM.}
+  \label{fig:overlapping-windows}
 \end{figure}
 
 
 \section{CASTS Phases}
-Our algorithm has four phases:
+CASTS has four phases:
 
 \begin{enumerate}
 
 \item \emph{Synchronization}
 
   During the synchronization phase, all nodes in the data center run a
-  supported time synchronization algorithm. All nodes synchronize
+  supported time synchronization protool. All nodes synchronize
   their internal clocks with a common master
   clock\footnotemark. Messages scheduling future snapshot times may be
   exchanged during this phase. These messages could be incorporated
@@ -81,7 +81,7 @@ Our algorithm has four phases:
  of the freeze window.
  
  Let $U_i$ be the uncertainty in node $i$'s current time (the error
- bounds from the time synchronization algorithm would be $\pm U_i$), and
+ bounds from the time synchronization protocol would be $\pm U_i$), and
  $T$ be the scheduled snapshot time. Node $i$ begins its freeze when
  its clock reads $T - U_i$, and completes it when its clock reads
  $T + U_i$, guaranteeing that the master clock's $T$ is captured in

@@ -1,24 +1,25 @@
 \chapter{Testing and Analysis}
 \label{sec:results}
 
-With a theoretical proof of our algorithm, we can move on to testing
+
+With a theoretical proof of CASTS, we can move on to testing
 and analyzing its real-world tractability and performance in creating
 small freeze windows.  Key to
 this endeavor, we must establish that any time synchronization
 protocol we choose is capable of reporting correct and accurate
 uncertainties for a node's time. As these uncertainties are used in
 calculating freeze windows, they must contain the real time
-(correctness), yet be small enough for the algorithm to be performant
+(correctness), yet be small enough for CASTS to be performant
 (accuracy).
 
 For the purposes of this project, we chose to make an in-depth
 analysis of the NTP implementation \texttt{ntpd}. NTP is an
 off-the-shelf protocol. Choosing an off-the-shelf protocol would
-greatly simplify implementation of our algorithm in Ceph. Of the
+greatly simplify implementation of CASTS in Ceph. Of the
 protocols we investigated in Chapter~\ref{sec:rel-work}, NTP is the
 only general purpose, open source protocol that has the
 functionality of providing the uncertainty bounds on clock error 
-that our algorithm requires. Its robust
+that CAST requires. Its robust
 design also suggests that it can function well in environments
 consisting of commodity components, as many Ceph deployments do. 
 Given these observations, NTP and \texttt{ntpd} were
@@ -161,7 +162,7 @@ way to observe the real time on a given computer. A simulated network
 environment running on a single computer has the advantage of having a
 single clock on which all simulated clocks are based. By having a
 single clock, we are able to quantify and verify the claims that time
-synchronization algorithms make about the quality of a synchronization
+synchronization protocols make about the quality of a synchronization
 and the quality of the clocks involved.
 
 %TODO:
@@ -203,8 +204,8 @@ time includes the real time.  The \texttt{clknetsim} package, for a
 given point-in-time in the simulation, allows us to observe what NTP
 estimates the time is along with information about how certain NTP is
 about that time. Our second goal is to analyze the accuracy of the
-time synchronization: the magnitude of the uncertainty.  As our
-algorithm is predicated on a upper bound of the uncertainty in time,
+time synchronization: the magnitude of the uncertainty.  As 
+CASTS is predicated on a upper bound of the uncertainty in time,
 performance analysis can be accomplished by observing how modifying
 parameters such as network latency affect the uncertainty bounds
 that NTP reports.
@@ -235,58 +236,52 @@ we would expect.
   \caption{~The safety buffer tells us where NTP's error in what the real time is lies within its uncertainty range.} 
   \label{fig:safety-diag}
   \centering
-  \includegraphics[width=0.8\textwidth]{safety-diagram.png}
+  \includegraphics[width=0.5\textwidth]{safety-diagram.png}
 \end{figure}
 
-The NTP specification specifies that the maximal error it reports is
+The NTP specification declares that the maximum error it reports is
 the uncertainty in the time accounting for error from all
 sources~\citep{Burbank2010}.  While running simulations, we monitored
 the safety buffer to test if \texttt{ntpd} is implementing the
 uncertainty calculation as we would expect and to quantify how much
 \texttt{ntpd} overestimates the uncertainty.  When parameterizing the
-simulation to real latency values recorded from the Ceph cluster, we
+simulation with latency values recorded from the Ceph cluster, we
 observed safety values summarized in Figure~\ref{fig:safety-data}.
-
-%TODO: describe/define settle
-\begin{figure}[!htbp]
-  \caption{~Generated from uncertainty data recorded during simulation paramaterized
-  with latencies recorded during monitoring of Ceph cluster. Uncertainty and time
-  data was recorded once per second in the simulation and the included statistics 
-  generated from the total dataset after the simulation was allowed to settle. 
-  The positive values indicate that the real time is occurring within \texttt{ntpd}'s 
-  uncertainty interval.}
-  \label{fig:safety-data}
-  \centering
-  \includegraphics[width=0.6\textwidth]{5pointsSafety.png}
-\end{figure}
 
 We can see that all of these values are positive. The daemon
 \texttt{ntpd} does seem to function as expected under the simulation
 conditions we observed.
 
+\begin{figure}[!htbp]
+  \caption{~Generated from uncertainty data recorded during simulation paramaterized
+  with latencies recorded during monitoring of Ceph cluster. Uncertainty and time
+  data was recorded once per second in the simulation and the included statistics 
+  generated from the total dataset after the simulation was allowed to stabilize. 
+  The positive values indicate that the real time is occurring within \texttt{ntpd}'s 
+  uncertainty interval.}
+  \label{fig:safety-data}
+  \centering
+  \includegraphics[width=0.55\textwidth]{5pointsSafety.png}
+\end{figure}
+
 \subsection{Generalization of Simulation Parameters}
 
-As \texttt{ntpd} functions as we expect in a real world scenario, we
-can continue with a more general performance analysis.  This section
+The previous section demonstrated that \texttt{ntpd} functions as we expect in 
+a real world scenario.  This section
 analyzes \texttt{ntpd}'s performance under a wide variety of simulated
 conditions---a wider range of conditions than \texttt{ntpd} would
-likely encounter in the real world.  Network latency is by far the
-largest contributing factor to \texttt{ntpd}'s uncertainty
-calculation. A network with a lower mean latency will likely enjoy
-proportionally lower freeze windows. This relationship does not
-continue for ultra-low latency networks however. A minimum uncertainty
-on the order of one millisecond is reached when latencies drop below a
-few milliseconds.
+likely encounter in the real world.  We found that network latency was the 
+largest contributer to the uncertainty, though the relationship does not 
+continue for ultra-low latency networks.
 
 For these simulations, network latency was modeled using a gamma
 distribution,
 %TODO: find a citation for this?
-since the data from the test Ceph cluster seemed to suggest that
+since the data from the test Ceph cluster suggests that
 latency approximately followed such a model. We varied two parameters:
-the mean value and the shaping parameter, or alpha.
-
-The shaping parameter determines the length of the tail for the gamma
-distribution: a larger value shortens the tail of the gamma
+the mean value and the shaping parameter, or alpha. The shaping parameter 
+determines the length of the tail for the distribution: a larger value 
+shortens the tail of the gamma
 distribution.  A very small shaping parameter value approximates an
 exponential distribution and a very large shaping parameter value
 approximates a normal distribution.
@@ -296,13 +291,13 @@ approximates a normal distribution.
 %% TODO: once we finalize the graphs, we should add some commentary about 
 %%       the values we're seeing actually mean.
 \begin{figure}[!htbp]
-  \caption{~NTP's mean uncertainty is plotted vs. the network latency mean and the network latency alpha parameter. We can see that the latency mean has a significant impact on the uncertainty, whereas the alpha parameter only impacts the uncertainty for large latency mean values.}
-  \label{fig:mean-uncertainty_latency-mean_latency-alpha}
-  \includegraphics[width=0.8\linewidth]{mean_max_error-mean_latency-latency_alpha.png}
-
-  \caption{~NTP's max uncertainty is plotted vs. the network latency mean and the network latency alpha parameter.}
+  \caption{~NTP's max uncertainty is plotted vs. the network latency mean and the network latency alpha parameter. We can see that the latency mean has a significant impact on the uncertainty, whereas the alpha parameter only impacts the uncertainty for large latency mean values.}
   \label{fig:max-uncertainty_latency-mean_latency-alpha}
   \includegraphics[width=0.8\linewidth]{max_error-latency_mean-latency_alpha.png}
+
+  \caption{~NTP's mean uncertainty is plotted vs. the network latency mean and the network latency alpha parameter.}
+  \label{fig:mean-uncertainty_latency-mean_latency-alpha}
+  \includegraphics[width=0.8\linewidth]{mean_max_error-mean_latency-latency_alpha.png}  
 \end{figure}
 %% Put in the appendix
 % \begin{figure}[h]
@@ -312,26 +307,25 @@ approximates a normal distribution.
 %% TODO: once we finalize the graphs, we should add some commentary about 
 %%       the values we're seeing actually mean.
 
-
-
 The maximum uncertainty value observed during a simulation is strongly
 affected by the mean network latency. The shape of the latency
 distribution has a much weaker effect on the maximum uncertainty
-value.  A low mean result in a low maximum uncertainty regardless of
+value. A low mean result in a low maximum uncertainty regardless of
 the shaping parameter value. A larger shaping parameter value does
 have a small effect on the maximum uncertainty. We can see this effect
 in Figure~\ref{fig:max-uncertainty_latency-mean_latency-alpha} at the
 top right corner.
 
-Interestingly, we see that the mean of the measured uncertainty values
-increases with increasing alpha. As alpha increases the data becomes
-more normal, resulting in more spread out values.  When the network
-latency distribution has a long tail, most of our values will be less
+Interestingly, we see, in Figure~\ref{fig:mean-uncertainty_latency-mean_latency-alpha}, that the mean of the measured uncertainty values
+increases with increasing alpha. As alpha increases the distribution of 
+latency values is more normal, resulting in more spread out latency values.
+When the network
+latency distribution has a long tail, most of our latency values will be less
 than or below the mean value. Values larger and farther away from the
-mean tend to happen less frequently and are more anomalous. NTP uses
+mean happen less frequently. NTP uses
 filtering and prediction algorithms to improve its estimates of the
 time~\citep{Burbank2010}. NTP's filtering algorithms likely catch
-these anomalous values and ignore them, keeping its uncertainty at a
+these anomalous values and ignores them, keeping its uncertainty at a
 lower, more reasonable value. We then see lower uncertainty values for
 lower alpha values.
 
@@ -349,20 +343,20 @@ Figure~\ref{fig:max-uncertainty_latency-mean_drift-variance} and
 Figure~\ref{fig:mean-uncertainty_latency-mean_drift-variance} show how
 clock frequency variation, or clock wander, affects the size of the
 uncertainty value.  We can see that there is very little, if any,
-effect from a clock's wander on the maximal uncertainty term. The
+effect from a clock's wander on the maximum uncertainty term. The
 slope along the x-axis (clock frequency wander) is effectively 0, a
 horizontal line. This is expected: network latency is a term with a
 much larger magnitude than the wander of even the worst clocks. We do
-see a strong, apparently linear, correlation again between mean
-latency and the uncertainty term.
+see a linear correlation between mean latency and the uncertainty term.
 
 In each of these graphs, there is a clear floor: the mean of the
-measured uncertainty values does not drop below around four
-milliseconds although the latency mean is dropped to tens of
-microseconds. This suggests that NTP will work well in scenarios
-involving commodity network hardware. However, in ultra-low latency
-scenarios, it may be advantageous to look for a protocol that is
-designed more specifically for a high performance network.
+measured uncertainty values does not drop below four
+milliseconds, even when the latency mean is tens of microseconds. 
+This suggests that NTP will work well in scenarios
+involving commodity network hardware where latencies are not necessarily ultra-
+low. However, in ultra-low latency scenarios, it may be advantageous to look 
+for a protocol that is designed more specifically for a high performance 
+network.
 
 
 
@@ -413,14 +407,14 @@ designed more specifically for a high performance network.
 
 %% TODO: figure out which appendix this is going to be ^^
 
-In summary, network latency mean has a large effect on freeze
-times. Network traffic shape does have an effect on freeze times, but
+In summary, network latency mean has a large effect on the length of freeze 
+windows. Latency value distribution does have an effect on freeze times, but
 its effect is small in comparison to mean network latency. An
 individual node's clock's drift variance is inconsequential to the
-final performance of our algorithm.
+final performance of CASTS.
 
-Because uncertainties compound in NTP, it is advisable to acquire a
-single, good clock (such as a GPS clock) to serve as a master. This will significantly
-decrease freeze windows.
+Uncertainties compound in NTP, thus it is advisable to acquire a
+single, perfect clock to serve as a master. This will significantly
+decrease the length of freeze windows.
 
 
