@@ -19,16 +19,16 @@ centers with a single NTP server for synchronization. Other tests
 could include very large data centers, which could result in more uncertainty 
 in observed network latency values and, more importantly, could require 
 more than one NTP server (and thereby increase uncertainties introduced by
-multiple layers of synchronizing clocks Chapter~\ref{sec:impl}).
+multiple layers of synchronizing clocks as described in Chapter~\ref{sec:impl}).
 
 For our simulations, the model we currently use for clock drifting
 behavior is a normal distribution. Unfortunately, we were
-unable to find literature describing better models for clock drifting
-behavior. With further analysis and testing, a better model could be
+unable to find literature describing better models for clock drift. 
+With further analysis and testing, a better model could be
 found for clock drifting behavior to help analyze the performance of
-the behavior. The clock drifting behavior is dependent on
-variables such as the Quartz crystal used in the clock, temperature and pressure
-variance in the room, and changes due to the synchronization process.
+the behavior. The clock drift is dependent on
+variables such as the Quartz crystal used in the clock, temperature and 
+pressure variance in the room, and changes due to the synchronization process.
 
 
 

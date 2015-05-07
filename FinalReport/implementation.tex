@@ -8,7 +8,8 @@ remember that a time server and client cannot be
 synchronized instantaneously, that the configuration 
 of the NTP server strongly influences the size of the 
 uncertainty window, and that NTP may not be an 
-appropriate synchronization protocol for all network topologies. 
+appropriate synchronization protocol for all network topologies. We discuss
+each of these considerations next.
 
 NTP requires time to stabilize its estimate of a clock's drift.
 Clock drift rate factors into NTP's reported maximum uncertainty
@@ -18,9 +19,9 @@ until after they have a stable estimate of clock drift.
 As a valid maximum uncertainty term is necessary for the proper 
 functioning of \alg, a newly online machine may not take part in
 a snapshot immediately. It must wait until NTP begins reporting 
-valid uncertainty values, a period of a few thousand seconds after 
+valid uncertainty values, a period of a 10-15 minutes after 
 time synchronization begins. Newly online machines then have a
-``warm up'' period in which a snapshot cannot trust their freeze
+``warm up'' period in which CASTS cannot trust their freeze
 window. During implementation, a team may decide to prevent 
 a new node from being previsioned with data until after this period 
 is expired, or the team may decide to allow the node to 
@@ -41,7 +42,7 @@ The quality of the master NTP clock significantly impacts the size of
 NTP's uncertainty bounds. If specialized hardware is a possibility, we 
 suggest that a very accurate clock, like
 a GPS or atomic clock, be used in the Ceph cluster. This
-recommendation is an implication of how NTP synchronizes clocks in a
+recommendation is based on an implication of how NTP synchronizes clocks in a
 network. NTP specifies a hierarchy of clocks, where clocks in lower strata
 in the hierarchy synchronize themselves with clocks that are in the
 strata above them \citep{Burbank2010}. Clocks that are higher in the 
@@ -58,7 +59,7 @@ data center's local NTP server, the NTP implementation is forced to synchronize
 to a remote time server, outside of the data center, adding a significant
 amount of uncertainty. Without a stratum 0 device, a local NTP server
 may also use its on-board RTC clock without synchronization. However, 
-NTP implementations then assume to worst possible clock
+NTP implementations then assume the worst possible clock
 properties for the server's physical RTC clock, also significantly 
 increasing uncertainty. Without a local stratum 0 device, \alg will
 still function correctly. It will simply require larger, more noticeable,
@@ -71,11 +72,11 @@ tailored to properties of data center networks
 could provide tighter uncertainty
 bounds than NTP. Our analysis here and in Chapter~\ref{sec:results} 
 focuses on the NTP implementation \texttt{ntpd} as \texttt{ntpd} is widely
-deployed, it supports hard bounds its own uncertainty, and it 
+deployed, it supports hard bounds on its own uncertainty, and it 
 provides easy access to important
 diagnostic information. However, if a better time synchronization
 protocol with tighter uncertainty bounds could be found, it should be
 used to achieve shorter freeze windows. The Precision Time Protocol (PTP)
 and the NTP implementation Chrony are each candidates for use with \alg. 
 They each may need modification to extract the
-necessary uncertainty information however.
+necessary uncertainty information, however.

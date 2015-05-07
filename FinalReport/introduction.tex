@@ -4,21 +4,21 @@
 Ceph is a highly distributed, redundant, strongly consistent data
 center-level file system. It is robust to failures within a data
 center, but does not currently provide a mechanism to protect against
-a data center-wide failure (e.g. a severed network fiber line).
+a data center-wide failure (e.g., a severed network fiber line).
 
 A Ceph client is able to communicate directly with the storage nodes
 containing data it accesses rather than relying on a separate
 controller node. This gives a distributed control structure, free of
-single points of failure. This allows Ceph clusters to be very
-robust. This communication structure also has the benefit of improving
+single points of failure, which allows Ceph clusters to be very
+robust. Ceph's communication structure also has the benefit of improving
 overall performance and scalability by spreading control and
 communication load across all nodes.
 
 For this project, we were tasked with determining a means by which to
-asynchronously geo-replicate the contents of a Ceph cluster. The data is 
+asynchronously geo-replicate the contents of a Ceph cluster to support failover to a backup cluster. The data is 
 transfered in recordings of the global state of the cluster, called snapshots.
 These snapshots must be consistent and performant, which required overcoming 
-the following complications:
+the following complications due to the distributed nature of Ceph:
 
 \begin{itemize}
 \item Inability to perfectly synchronize clocks between machines.
@@ -60,7 +60,7 @@ which includes:
 \item the collection of data from a Ceph cluster to create
   latency and clock drift models;
 \item simulations showing that the uncertainty bounds defined by the
-  Network Time Protocol (NTP) will contain the real time;
+  Network Time Protocol (NTP) are accurate enough to use in CASTS;
 \item simulations that test NTP's performance in a multitude of
   cluster configurations.
 \end{itemize}

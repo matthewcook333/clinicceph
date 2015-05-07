@@ -35,7 +35,7 @@ this measurement, the task of synchronizing clocks would be trivial
 as we could achieve perfect synchronization without any uncertainty.
 Thus, the task of testing correctness by comparing nodes' clocks to a
 reference clock in the real
-world is impossible. As a result, simulations will factor heavily into
+world is impossible. As a result, simulations will heavily impact
 our analysis of \texttt{ntpd}.
 
 This chapter is split into two sections. The first section discusses
@@ -218,7 +218,7 @@ in that estimate. \texttt{Clknetsim} allows us to access that information, and
 it lets us to know the real time of the system. All of this admits
 us to know what the ``safety buffer" is for each node in real time.
 
-Recall the safety buffer first introduced in Section~\ref{sec:overlapping}, $S(t)$,  for a particular node is defined as:
+Recall the safety buffer first introduced in Section~\ref{sec:overlapping} $S(t)$. For a particular node, we define it here as:
 
 \[ S(t) = U(t) - | t - E(t)| \]
 
@@ -320,7 +320,7 @@ have a small effect on the maximum uncertainty. We can see this effect
 in Figure~\ref{fig:max-uncertainty_latency-mean_latency-alpha} at the
 top right corner.
 
-Interestingly, we see, in Figure~\ref{fig:mean-uncertainty_latency-mean_latency-alpha}, that the mean of the measured uncertainty values
+Interestingly, we see in Figure~\ref{fig:mean-uncertainty_latency-mean_latency-alpha} that the mean of the measured uncertainty values
 increases with increasing alpha. As alpha increases the distribution of 
 latency values is more normal, resulting in more spread out latency values.
 When the network
@@ -343,8 +343,7 @@ lower alpha values.
   \includegraphics[width=0.8\linewidth]{mean_max_err-mean_latency-drift_variance.png}
 \end{figure}
 
-Figure~\ref{fig:max-uncertainty_latency-mean_drift-variance} and
-Figure~\ref{fig:mean-uncertainty_latency-mean_drift-variance} show how
+Figures~\ref{fig:max-uncertainty_latency-mean_drift-variance}~and~\ref{fig:mean-uncertainty_latency-mean_drift-variance} show how
 clock frequency variation, or clock wander, affects the size of the
 uncertainty value.  We can see that there is very little, if any,
 effect from a clock's wander on the maximum uncertainty term. The

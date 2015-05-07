@@ -53,11 +53,11 @@ our snapshotting algorithm~\citep{Fidge1988}.
 \section{Network Time Synchronization}
 
 As mentioned in Chapter \ref{sec:description}, total ordering can be
-achieved through timestamps if we used the timestamp of each event to 
-determine to chronologically order the events. 
+achieved through timestamps if we used the timestamp of each event
+to chronologically order the events. 
 In theory, this would be able to provide
 a total ordering of events including any out-of-band
-communication. Clock drift and disagreement, or ``skew'', complicate this approach: When
+communication. Clock drift and disagreement, or ``skew'', complicate this approach: when
 multiple clocks are in use in a distributed system, the clocks must be
 synchronized in order to use timestamps to order events across nodes.
 

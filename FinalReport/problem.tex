@@ -1,4 +1,4 @@
-\chapter{Description of Problem}
+\chapter{Background and Challenges}
 \label{sec:description}
 
 Our goal was to design a snapshotting system for Ceph that
@@ -22,17 +22,17 @@ that one node's failure will not cause a permanent loss of data. This will
 maintain a user's data, even though it is common for nodes to fail in a large 
 data center given the sheer number of nodes. Ceph will also hold a
 confirmation of a write's success until it is certain that the data has been 
-stored and properly replicated. When a client receives a confirmation of a write, they can be certain that the data has been received and replicated properly. These characteristics ensure that a user's 
+stored and properly replicated. When a client receives a confirmation of a write, it can be certain that the data has been received and replicated properly. These characteristics ensure that a user's 
 data will be kept consistent.
 
 Ceph also allows out-of-band communication for client applications. 
 Out-of-band communication is communication that is related to the data in the 
 Ceph cluster, but that Ceph cannot detect. This contrasts with in-band
-communication, which the Ceph cluster can see and potentially account for. 
+communication, which the Ceph cluster can see. 
 
 \begin{figure}[!htbp]
   \centering
-  \caption{~Two clients communicating with each other out-of-band.} 
+  \caption{The two clients outside the cloud are communicating with each other out-of-band.} 
   \label{fig:out-of-band}
   \includegraphics[width=0.8\textwidth]{outofbandwrite.png}
 \end{figure}
@@ -56,7 +56,7 @@ periods of time.
 
 Finally, Ceph allows a user to use commodity hardware when
 constructing their cluster. This gives users more versatility, but
-adds extra constraints on our problem, since we cannot specify
+adds extra constraints to our problem, since we cannot specify
 hardware that the user must purchase for a snapshotting algorithm to work. If commodity 
 hardware were not a concern, then we could adapt Google's TrueTime library for 
 Ceph. For a more detailed explanation of TrueTime
@@ -64,7 +64,7 @@ and why it does not solve our problem, see Chapter~\ref{sec:rel-work}.
 
 \section{Consistent Snapshots}
 
-A solution to this problem will require recording the global state of the 
+A snapshotting algorithm for Ceph will require recording the global state of the 
 data in a Ceph cluster. A recording of that global state is called a 
 ``snapshot". However, we require that a snapshot be consistent. 
 A consistent snapshot is one that preserves the causal relationships 
@@ -82,7 +82,7 @@ inconsistent snapshots.
 
 \begin{figure}[!htbp]
   \centering
-  \caption{~Event A caused event B. The dashed line in the center represents the time when the snapshot took place. The first three cases are examples of consistent snapshots. The last case is an inconsistent snapshot.} 
+  \caption{~Event A caused event B. The dashed line in the center represents the time when the snapshot took place. The first three cases are examples of consistent snapshots. The last case is an inconsistent snapshot because the dependent event B is in the snapshot, but the event A that caused B is excluded.} 
   \label{fig:consistency}
   \includegraphics[width=0.75\textwidth]{consistency.png}
 \end{figure}
@@ -92,7 +92,7 @@ inconsistent snapshots.
 Ceph's distributed architecture and lack of central log means that
 there is no centralized place where we could obtain a total ordering
 of the events in the cluster. A total ordering is an exact order of
-all events. Events are logged on the individual nodes. The lack a complete 
+all events. Events are logged on the individual nodes. The lack of a complete 
 ordering of events means that we will have to use the partial data at each 
 node to reconcile the ordering of the events, while still maintaining the 
 consistency of the data of the snapshot.
@@ -101,8 +101,8 @@ Logical clocks, like Lamport or vector clocks, are sometimes used to
 order events in distributed systems. They provide a partial ordering
 of the events in a system, which is where events that have a causal
 relationship can be ordered. Logical clocks could provide
-us a way to order events to construct a consistent snapshot. However,
-they fail when out-of-band communication is permitted. Since Ceph
+a way to order events to construct a consistent snapshot. However,
+they fail when out-of-band communication is possible. Since Ceph
 allows for out-of-band communication, logical clocks will
 not work. For a more detailed explanation of Lamport and vector clocks
 and why they do not solve our problem, see Chapter~\ref{sec:rel-work}.
@@ -119,8 +119,7 @@ total ordering of the events, since the clocks would slowly become
 more and more desynchronized, until the clocks are no longer reliable
 ways to distinguish when events occurred on different nodes. An event
 could receive a later timestamp than an event it caused. If those timestamps 
-were used to take a snapshot, it could create an inconsistent snapshot of our 
-system.
+were used to take a snapshot, it could create an inconsistent snapshot.
 
 Another naive approach is to propagate a write freeze throughout the
 cluster through a special freeze message that is sent to all nodes.  When a specific node determines that it is time to take a
@@ -130,12 +129,12 @@ does the same. In the end, when all nodes have frozen, the snapshot
 can be taken and the nodes begin to unfreeze.
 
 However, depending on the size of the cluster, it could take a long
-time for that freeze to propagate through the cluster. If a client
+time for that freeze message to propagate through the cluster. If a client
 wanted to write to the node that started the freeze, it could take
 tens of milliseconds to do so.  This would noticeably degrade Ceph's
 performance, which is not acceptable.  However, we will see in
 Chapter~\ref{sec:approach} that we can modify this approach to remove
-the performance degradation.
+the performance degradation of an approach that uses write freezes.
 
 Finally, Google has implemented a library called TrueTime to provide
 ranges of what real time could be in their Spanner database. While

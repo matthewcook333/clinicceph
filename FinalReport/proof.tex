@@ -24,9 +24,7 @@ a visual demonstration of what this would mean.
 More formally, here is the statement that we want to prove: {\em let
   $A$ and $B$ be events in our system, where $B$ was caused by
   $A$. Our goal is to prove that if $B$ was captured in our snapshot,
-  then $A$ must have been as well.}
-
-This is equivalent to the visualization provided by
+  then $A$ must have been as well.} This is equivalent to the visualization provided by
 Figure~\ref{fig:consistentoverlap}.
 
 \begin{figure}[!htbp]
@@ -41,11 +39,11 @@ and $T_B$ to be the (objective) time at which $B$ occurred. Since $A$
 caused $B$, we know that $A$ must have taken place before $B$, meaning
 $T_A < T_B$.
 
-In Chapter~\ref{sec:approach}, we shows that CASTS guarantees that all
+In Chapter~\ref{sec:approach}, we show that CASTS guarantees that all
 of the freeze windows of the nodes in our system will overlap when we
 are taking a snapshot. In other words at some point in time or for
 some time period, all nodes will be frozen.  During this interval, the
-cluster as a whole will not confirm completion of to write events. For
+cluster as a whole will not confirm completion of write events. For
 clarity, when we are considering the order of events, we will collapse
 the entire freeze window into a single event $F$ and consider the start
 time of the interval to be the time of the event $T_F$.
@@ -93,7 +91,7 @@ cluster's performance in a way noticeable to client
 applications~\citep{Sage}. Also, each node's freeze window is
 offset from other nodes', because each freezes for its own individual
 uncertainty bounds, so the period of time for which the whole Ceph cluster is
-frozen is much.
+frozen is much shorter.
 
 In this section, we consider the impact on network link quality of
 CASTS. We need to be assured that CASTS does not
@@ -109,15 +107,12 @@ a few bytes). In the replication phase, the remote cluster needs to
 read the data from the local one, but this cost is inherent to any
 snapshotting algorithm.
 
-Finally, we need to consider whether CASTS, will place a significant
+Finally, we need to consider whether CASTS will place a significant
 computational burden on nodes. Each primary node needs to send its
 data to the remote cluster. This should not impact the performance of
 the primaries, since it should only take a small amount of time for
-each to send its data provided data is sent in differences between
-snapshots rather than complete sets. Even if it did take some time to
-send the data, read and write requests could still be addressed by
-prioritizing those requests above the requests for the objects from
-the remote cluster. Sending all of the data out at once could require
+each to send its data provided data is sent as differences between
+snapshots rather than complete sets of the data cluster. Sending all of the data out at once could require
 nontrivial bandwidth. Since it is distributed throughout the Ceph
 cluster, however, the bottleneck would be the bandwidth from the local
 cluster to the remote cluster. The inter-cluster pipe should be

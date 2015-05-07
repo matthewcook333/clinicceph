@@ -19,7 +19,7 @@ they have reached it. The freeze windows for CASTS are
 designed to ensure that all of the nodes in the cluster are frozen at
 the snapshot time.
 
-Let $T$ be the scheduled snapshot time and $U_i$ as the time
+Let $T$ be the scheduled snapshot time and $U_i$ be the time
 synchronization protocol's uncertainty of that node's clock error at
 that time. The time synchronization protocol guarantees that real time
 is always within its uncertainty bound on the clock's time. This means
@@ -30,7 +30,7 @@ the node will be frozen when the real time is $T$.
 Figure~\ref{fig:safety-buff} shows the snapshot time within a freeze
 window and the ``safety buffer", which is the extra time between the
 snapshot time and the closest boundary of the freeze window. This is,
-in other words, how much more wrong our clock could have been without
+in other words, how much more wrong a node's clock could have been without
 violating the guarantees of CASTS.
 
 \begin{figure}
@@ -41,18 +41,18 @@ violating the guarantees of CASTS.
 \end{figure}
 
 
-This is true for each node, so we can be sure that each node will be
-frozen at $T$ and, therefore, we can be certain that their freeze
-windows overlap. Figure~\ref{fig:overlapping-windows} demonstrates
-this concept with four freeze windows overlapping at the snapshot time
-of 8pm.
-
 \begin{figure}[!htbp]
   \centering
   \caption{~Each box is the freeze window of a given node. The x axis is progression of ``real" time. Note that they all overlap with ``true" 8PM.}
   \label{fig:overlapping-windows}
   \includegraphics[width=0.8\textwidth]{overlapping-windows.png}
 \end{figure}
+
+This is true for each node, so we can be sure that each node will be
+frozen at $T$ and, therefore, we can be certain that their freeze
+windows overlap. Figure~\ref{fig:overlapping-windows} demonstrates
+this concept with four freeze windows overlapping at the snapshot time
+of 8pm.
 
 
 \section{CASTS Phases}
@@ -72,8 +72,9 @@ CASTS has four phases:
  \footnotetext{In the case where NTP is used as the time
   synchronization protocol, multiple NTP servers may also be used,
   but they must all synchronize to the same root, or \emph{stratum
-   1}, NTP server. Otherwise, the NTP uncertainties will not
+  1}, NTP server. Otherwise, the NTP uncertainties will not
   necessarily provide overlapping freeze windows}
+ 
 
 \item \emph{Freeze}
  
@@ -87,6 +88,8 @@ CASTS has four phases:
  its clock reads $T - U_i$, and completes it when its clock reads
  $T + U_i$, guaranteeing that the master clock's $T$ is captured in
  the freeze window for each node $i$.
+
+  
 
 \item \emph{Confirmation}
 
